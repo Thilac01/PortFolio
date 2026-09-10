@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-09-10T01:08:11.997Z",
+  "folders": [
+    {
+      "id": "datastrom",
+      "folder": "DATASTROM",
+      "name": "DataStorm 7.0",
+      "award": "National Finalist & Podium Deliberation",
+      "organization": "Rotaract Clubs of UoM & UoC • Powered by Octave",
+      "venue": "Colombo, Sri Lanka",
+      "date": "2025 / 2026",
+      "icon": "fas fa-chart-line",
+      "badge": "DataStorm 7.0",
+      "imageCount": 6,
+      "images": [
+        "1.jpg",
+        "2.jpg",
+        "3.jpg",
+        "4.jpg",
+        "5.jpg",
+        "6.jpg"
+      ]
+    },
+    {
+      "id": "nexushacks",
+      "folder": "NexusHacks",
+      "name": "NexusHacks 2026",
+      "award": "1st Runner-Up (Agentic AI Track)",
+      "organization": "Organized by Phaser, India • Team Kestrel (Dept. of Computer Engineering, Univ. of Peradeniya)",
+      "venue": "National AI Arena (Remote / Hybrid)",
+      "date": "2026",
+      "icon": "fas fa-brain",
+      "badge": "1st Runner-Up",
+      "imageCount": 1,
+      "images": [
+        "1.jpg"
+      ]
+    }
+  ]
+}
