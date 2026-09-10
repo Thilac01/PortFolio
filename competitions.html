@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Competitions &amp; Hackathons | Interactive Visual Gallery | Thilac Ramesh</title>
+  <meta name="description" content="Explore high-resolution photo dispatches, national championships, live pitches, and hackathon moments with live search, likes, comments, and story narratives.">
+
+  <!-- Typography Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/competitions.css">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+</head>
+<body class="light-theme">
+
+  <!-- Ambient Glow Atmosphere -->
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- ========================================================================
+       TOP NAVIGATION BAR
+       ======================================================================== -->
+  <header class="floating-page-header">
+    <div class="container">
+      <div class="floating-nav-bar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <a href="index.html#competitions" class="floating-back-link" title="Return to Main Portfolio">
+            <i class="fas fa-arrow-left"></i> <span>Back to Portfolio</span>
+          </a>
+          <div class="brand-title" style="display: flex; align-items: center; gap: 0.5rem;">
+            <span class="brand-name" style="font-size: 0.95rem; font-weight: 700; letter-spacing: 0.05em;">THILAC RAMESH</span>
+            <span style="opacity: 0.35;">/</span>
+            <span class="gallery-nav-badge"><i class="fas fa-camera-retro"></i> Social Arena Gallery</span>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <a href="index.html#projects" class="floating-back-link" style="font-size: 0.82rem;">
+            <i class="fas fa-project-diagram"></i> Projects
+          </a>
+          <button class="icon-btn" id="theme-toggle-btn" title="Toggle Dark/Light Mode" aria-label="Toggle Theme" style="display: none !important;">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       GALLERY HERO & CONTROLS SECTION (Compact & Fully Scrollable)
+       ======================================================================== -->
+  <section class="gallery-hero-section">
+    <div class="container">
+      <!-- Arena Gallery Compact Intro Header -->
+      <div class="gallery-hero-header">
+        <div class="gallery-hero-text">
+          <div class="gallery-live-tag">
+            <span class="live-dot"></span>
+            <span>National Championships &bull; Hackathons &bull; Live Moments</span>
+          </div>
+          <h1 class="gallery-main-title">
+            <i class="fas fa-trophy" style="color: #f59e0b;"></i> Competitions &amp; Visual Gallery
+          </h1>
+          <p class="gallery-main-desc">
+            High-resolution dispatches from national championships (DataStorm 7.0), agentic AI hackathons, and stage pitch defenses.
+          </p>
+        </div>
+
+        <!-- Social Activity Quick Counter Pill -->
+        <div class="gallery-social-pill" id="global-social-stats">
+          <div class="social-stat-item">
+            <i class="fas fa-images"></i>
+            <div>
+              <strong id="total-moments-count">8</strong>
+              <span>Moments</span>
+            </div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="social-stat-item">
+            <i class="fas fa-heart" style="color: #ff2d55;"></i>
+            <div>
+              <strong id="total-likes-count">10.4K</strong>
+              <span>Likes</span>
+            </div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="social-stat-item">
+            <i class="fas fa-comment" style="color: #0a66c2;"></i>
+            <div>
+              <strong id="total-comments-count">186</strong>
+              <span>Comments</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           SEARCH BAR & VIEW CONTROLS TOOLBAR
+           ==================================================================== -->
+      <div class="gallery-toolbar-card">
+        <!-- Search Input Bar with Icon and Clear -->
+        <div class="gallery-search-wrap">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            type="text" 
+            id="gallery-search-input" 
+            class="gallery-search-input" 
+            placeholder="Search moments, hackathons, awards, tags (e.g. Octave, Podium, Stage, AI, Peradeniya)..."
+            autocomplete="off"
+            aria-label="Search competition moments"
+          />
+          <button class="search-clear-btn" id="search-clear-btn" title="Clear Search" aria-label="Clear Search">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- View Mode Switcher -->
+        <div class="gallery-view-controls">
+          <div class="view-mode-toggle" role="group" aria-label="View Mode">
+            <button class="view-mode-btn active" id="view-mode-feed" title="Side-by-side interactive card showcase">
+              <i class="fas fa-th-large"></i> <span>Cards Feed</span>
+            </button>
+            <button class="view-mode-btn" id="view-mode-grid" title="Compact photo grid">
+              <i class="fas fa-th"></i> <span>Explore Grid</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="gallery-filters-row">
+        <div class="comp-filter-tabs-wrapper" id="comp-filter-tabs-wrapper" style="margin-bottom: 0;">
+          <button class="comp-filter-btn active" data-filter="all">
+            <i class="fas fa-layer-group"></i> All Moments <span class="comp-filter-count" id="count-all">8</span>
+          </button>
+          <button class="comp-filter-btn" data-filter="datastorm">
+            <i class="fas fa-chart-line"></i> DataStorm 7.0 <span class="comp-filter-count" id="count-datastorm">6</span>
+          </button>
+          <button class="comp-filter-btn" data-filter="nexushacks">
+            <i class="fas fa-brain"></i> NexusHacks 2026 <span class="comp-filter-count" id="count-nexushacks">1</span>
+          </button>
+          <button class="comp-filter-btn" data-filter="modelx">
+            <i class="fas fa-award"></i> Model X <span class="comp-filter-count" id="count-modelx">1</span>
+          </button>
+          <button class="comp-filter-btn" data-filter="stage">
+            <i class="fas fa-microphone-alt"></i> Stage &amp; Pitch <span class="comp-filter-count" id="count-stage">2</span>
+          </button>
+          <button class="comp-filter-btn" data-filter="podium">
+            <i class="fas fa-medal"></i> Podium &amp; Awards <span class="comp-filter-count" id="count-podium">3</span>
+          </button>
+        </div>
+
+        <div class="search-status-text" id="search-status-text">
+          Showing 8 moments
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MAIN GALLERY STAGE (Feed View or Explore Grid)
+       ======================================================================== -->
+  <main class="container gallery-main-container">
+    <div class="gallery-stage-container view-feed" id="gallery-stage-container">
+      <!-- Populated dynamically by js/floating-board.js -->
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       INTERACTIVE INSTAGRAM COMMENTS MODAL / DRAWER
+       ======================================================================== -->
+  <div class="insta-comments-modal" id="insta-comments-modal" role="dialog" aria-modal="true" aria-label="Comments">
+    <div class="comments-modal-backdrop" id="comments-modal-backdrop"></div>
+    <div class="comments-drawer">
+      <!-- Drawer Header -->
+      <div class="comments-drawer-header">
+        <div class="comments-header-title">
+          <i class="far fa-comment-dots"></i>
+          <span>Comments</span>
+          <span class="comments-badge" id="modal-comments-badge">0</span>
+        </div>
+        <button class="comments-close-btn" id="comments-close-btn" aria-label="Close Comments">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Post Summary Banner -->
+      <div class="comments-post-summary" id="comments-post-summary">
+        <img src="" alt="" class="summary-thumb" id="comments-summary-img" />
+        <div class="summary-details">
+          <div class="summary-event" id="comments-summary-event">Event Name</div>
+          <div class="summary-title" id="comments-summary-title">Post Title</div>
+        </div>
+      </div>
+
+      <!-- Scrollable Comment List -->
+      <div class="comments-list-scroll" id="comments-list-scroll">
+        <!-- Dynamically injected comment threads -->
+      </div>
+
+      <!-- Quick Reaction Emojis -->
+      <div class="comments-quick-emojis">
+        <button type="button" class="emoji-chip" data-emoji="🔥">🔥 Fire</button>
+        <button type="button" class="emoji-chip" data-emoji="👏">👏 Brilliant</button>
+        <button type="button" class="emoji-chip" data-emoji="🏆">🏆 Champion</button>
+        <button type="button" class="emoji-chip" data-emoji="🚀">🚀 Superb</button>
+        <button type="button" class="emoji-chip" data-emoji="🇱🇰">🇱🇰 Proud</button>
+        <button type="button" class="emoji-chip" data-emoji="💯">💯 100</button>
+      </div>
+
+      <!-- Comment Submission Form -->
+      <form class="comments-submit-form" id="comments-submit-form">
+        <div class="comment-author-input-wrap">
+          <i class="far fa-user"></i>
+          <input 
+            type="text" 
+            id="comment-author-name" 
+            class="comment-author-input" 
+            placeholder="Your name (e.g. Alex M.)"
+            maxlength="40"
+          />
+        </div>
+        <div class="comment-text-input-wrap">
+          <textarea 
+            id="comment-text-input" 
+            class="comment-textarea" 
+            placeholder="Add a comment for Thilac..." 
+            rows="2"
+            required
+            maxlength="400"
+          ></textarea>
+          <button type="submit" class="comment-post-btn" id="comment-post-btn">
+            Post
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       FULLSCREEN HIGH-RES LIGHTBOX MODAL
+       ======================================================================== -->
+  <div class="comp-lightbox-modal" id="comp-floating-lightbox" role="dialog" aria-modal="true" aria-label="Moment Fullscreen Viewer">
+    <div class="comp-lightbox-backdrop"></div>
+
+    <!-- Lightbox Top Bar -->
+    <div class="comp-lightbox-topbar">
+      <div class="comp-lightbox-meta-left">
+        <span class="comp-lightbox-badge-pill" id="lightbox-badge">DataStorm 7.0</span>
+        <span class="comp-lightbox-counter" id="lightbox-counter">1 / 8</span>
+      </div>
+      <div class="comp-lightbox-top-actions">
+        <a href="#" target="_blank" class="comp-lightbox-btn" id="lightbox-btn-newtab" title="Open Original Image in New Tab">
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+        <button class="comp-lightbox-btn" id="lightbox-btn-close" aria-label="Close Lightbox (Esc)">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Visual Stage -->
+    <div class="comp-lightbox-stage">
+      <button class="comp-lightbox-nav prev" id="lightbox-nav-prev" aria-label="Previous Moment (Left Arrow)">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+
+      <div class="comp-lightbox-img-wrapper" id="lightbox-img-wrapper">
+        <img src="" alt="" class="comp-lightbox-full-img" id="lightbox-full-img" />
+      </div>
+
+      <button class="comp-lightbox-nav next" id="lightbox-nav-next" aria-label="Next Moment (Right Arrow)">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- Bottom Narrative & Actions Card -->
+    <div class="comp-lightbox-caption-card">
+      <div class="comp-lightbox-caption-header">
+        <div>
+          <div class="comp-lightbox-award-tag" id="lightbox-caption-award"></div>
+          <h3 class="comp-lightbox-title" id="lightbox-caption-title">Moment Title</h3>
+        </div>
+        <div class="lightbox-social-actions">
+          <button class="lightbox-action-btn like-btn" id="lightbox-like-btn" title="Like this moment">
+            <i class="far fa-heart"></i> <span id="lightbox-likes-num">1,420</span>
+          </button>
+          <button class="lightbox-action-btn comment-btn" id="lightbox-comment-btn" title="Open Comments">
+            <i class="far fa-comment"></i> <span id="lightbox-comments-num">24</span>
+          </button>
+        </div>
+      </div>
+      
+      <p class="comp-lightbox-story" id="lightbox-caption-story">
+        Detailed competition narrative.
+      </p>
+
+      <div class="comp-lightbox-tags-strip" id="lightbox-caption-tags"></div>
+    </div>
+
+    <!-- Thumbnail Strip -->
+    <div class="comp-lightbox-thumbs-strip" id="lightbox-thumbs-strip"></div>
+  </div>
+
+  <!-- ========================================================================
+       FLOATING TOAST NOTIFICATION
+       ======================================================================== -->
+  <div class="gallery-toast" id="gallery-toast" role="alert" aria-live="polite">
+    <i class="fas fa-check-circle toast-icon"></i>
+    <span class="toast-message" id="toast-message">Action confirmed</span>
+  </div>
+
+  <!-- Floating Back to Top Button -->
+  <button class="gallery-scroll-top-btn" id="gallery-scroll-top-btn" title="Back to Top" aria-label="Back to Top">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- Scripts -->
+  <script src="js/gallery-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/floating-board.js"></script>
+</body>
+</html>
