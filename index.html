@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="styles/projects.css">
   <link rel="stylesheet" href="styles/competitions.css">
   <link rel="stylesheet" href="styles/admin.css">
+  <link rel="stylesheet" href="styles/chatbot.css">
 
   <link rel="icon" type="image/svg+xml"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
@@ -1333,12 +1334,104 @@
     </div>
   </div>
 
+  <!-- ========================================================================
+       FLOATING AI ASSISTANT WIDGET (RAG & GEMINI POWERED)
+       ======================================================================== -->
+  <!-- Floating Launcher Button -->
+  <div class="chatbot-launcher" id="chatbot-launcher-btn" role="button" aria-label="Open Chatbot">
+    <div class="chatbot-callout" id="chatbot-callout-tooltip">
+      <span>💬 Have questions? Ask Chatbot!</span>
+    </div>
+    <div class="chatbot-launcher-avatar">
+      <i class="fas fa-robot"></i>
+      <span class="chatbot-beacon"></span>
+    </div>
+    <div class="chatbot-launcher-text">
+      <div class="chatbot-launcher-title">
+        <span>Chatbot</span>
+      </div>
+      <div class="chatbot-launcher-sub">Ask about projects &amp; research</div>
+    </div>
+  </div>
+
+  <!-- Chatbot Window Modal -->
+  <div class="chatbot-container" id="chatbot-modal" role="dialog" aria-modal="true" aria-label="Portfolio Chatbot">
+    <!-- Header -->
+    <div class="chatbot-header">
+      <div class="chatbot-header-left">
+        <div class="chatbot-header-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="chatbot-header-info">
+          <div class="chatbot-header-title">
+            <span>Chatbot</span>
+          </div>
+          <div class="chatbot-header-status">
+            <span class="status-pip"></span>
+            <span>Online &bull; Portfolio Grounded</span>
+          </div>
+        </div>
+      </div>
+      <div class="chatbot-header-actions">
+        <button class="chatbot-control-btn" id="chatbot-btn-clear" title="Clear Conversation">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <button class="chatbot-control-btn" id="chatbot-btn-minimize" title="Minimize / Restore">
+          <i class="fas fa-minus"></i>
+        </button>
+        <button class="chatbot-control-btn btn-close" id="chatbot-btn-close" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable Messages Feed -->
+    <div class="chatbot-body" id="chatbot-messages-feed">
+      <!-- Messages dynamically appended here -->
+    </div>
+
+    <!-- Quick Suggestion Chips -->
+    <div class="chatbot-suggestions">
+      <button class="suggestion-chip" data-query="Tell me about your Unitree Go2 SLAM project at WSO2">
+        <i class="fas fa-robot"></i> Unitree Go2 SLAM
+      </button>
+      <button class="suggestion-chip" data-query="What mechanical CAD & CSWA design projects have you built?">
+        <i class="fas fa-cogs"></i> CSWA &amp; Gearbox
+      </button>
+      <button class="suggestion-chip" data-query="Tell me about your awards at DataStorm 7.0 and NexusHacks">
+        <i class="fas fa-trophy"></i> Hackathon Awards
+      </button>
+      <button class="suggestion-chip" data-query="What is your educational background and technical skills?">
+        <i class="fas fa-graduation-cap"></i> Peradeniya &amp; Skills
+      </button>
+      <button class="suggestion-chip" data-query="How can I contact Thilac or collaborate with him?">
+        <i class="fas fa-envelope"></i> Contact &amp; Resume
+      </button>
+    </div>
+
+    <!-- Footer Input Bar -->
+    <div class="chatbot-footer">
+      <form class="chatbot-form" id="chatbot-input-form">
+        <textarea class="chatbot-input" id="chatbot-input-field" rows="1" placeholder="Ask anything about Thilac's research, skills, or projects..." aria-label="Type your message"></textarea>
+        <button type="submit" class="chatbot-send-btn" id="chatbot-send-button" title="Send message" disabled>
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+      <div class="chatbot-caption">
+        Strictly grounded on Thilac Ramesh's engineering portfolio &bull; Press Ctrl+/ to toggle
+      </div>
+    </div>
+  </div>
+
   <!-- Application Logic Scripts -->
   <script src="js/data.js"></script>
   <script src="js/gallery-config.js"></script>
   <script src="js/workflow-canvas.js"></script>
   <script src="js/app.js"></script>
   <script src="js/admin.js"></script>
+  <script src="js/gemini-config.js"></script>
+  <script src="js/portfolio-rag.js"></script>
+  <script src="js/chatbot.js"></script>
 </body>
 
 </html>
