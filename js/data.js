@@ -24,8 +24,10 @@ const DEFAULT_PROJECTS = [
     tags: ["ROS 2", "Unitree Go2 EDU SDK", "SLAM", "Nav2", "MuJoCo", "Python", "C++", "ACSAR-E"],
     heroImage: "assets/schematic-quadruped.svg",
     gallery: [
-      "assets/schematic-quadruped.svg",
-      "assets/schematic-robotic-arm.svg"
+      "assets/unitree-go2-hero.png",
+      "assets/unitree-go2-team.png",
+      "assets/unitree-go2-robot.png",
+      "assets/schematic-quadruped.svg"
     ],
     videoUrl: "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ", // Embeddable video link or demo
     pdfUrl: "assets/CV.pdf",
@@ -88,7 +90,7 @@ const DEFAULT_PROJECTS = [
     tags: ["SOLIDWORKS", "CSWA", "Gear Design", "Planetary Gearbox", "FEA", "von Mises", "DFM"],
     heroImage: "assets/schematic-planetary.svg",
     gallery: [
-      "Meat/1.png",
+      "assets/meat-mincer-assembly.png",
       "assets/schematic-planetary.svg"
     ],
     videoUrl: "",
@@ -211,9 +213,9 @@ const DEFAULT_PROJECTS = [
       { label: "Framework", value: "Geometric Radial Projection" }
     ],
     tags: ["Theoretical Physics", "Quantum Mechanics", "Higher-Dimensional Geometry", "LaTeX", "Python", "NumPy"],
-    heroImage: "assets/schematic-robotic-arm.svg",
+    heroImage: "assets/HDRM.svg",
     gallery: [
-      "assets/schematic-robotic-arm.svg"
+      "assets/HDRM.svg"
     ],
     videoUrl: "",
     pdfUrl: "assets/CV.pdf",
@@ -267,9 +269,9 @@ const DEFAULT_PROJECTS = [
       { label: "Sync Mode", value: "Real-time Binary Log Stream" }
     ],
     tags: ["FastAPI", "Python", "MariaDB", "CDC", "Docker", "IoT Middleware", "DFM", "Linux"],
-    heroImage: "assets/schematic-quadruped.svg",
+    heroImage: "assets/JPL.svg",
     gallery: [
-      "assets/schematic-quadruped.svg"
+      "assets/JPL.svg"
     ],
     videoUrl: "",
     pdfUrl: "assets/CV.pdf",
@@ -321,9 +323,9 @@ const DEFAULT_PROJECTS = [
       { label: "License", value: "MIT Open Source" }
     ],
     tags: ["Python", "PyPI", "Package Development", "Pandas", "CI/CD", "Open Source"],
-    heroImage: "assets/schematic-robotic-arm.svg",
+    heroImage: "assets/ezclean.svg",
     gallery: [
-      "assets/schematic-robotic-arm.svg"
+      "assets/ezclean.svg"
     ],
     videoUrl: "",
     pdfUrl: "assets/CV.pdf",
@@ -375,9 +377,9 @@ const DEFAULT_PROJECTS = [
       { label: "Backend", value: "Flask + Multi-Threaded Workers" }
     ],
     tags: ["spaCy", "Sentence-BERT", "Machine Learning", "Flask", "VADER", "NLP", "Scikit-Learn"],
-    heroImage: "assets/schematic-quadruped.svg",
+    heroImage: "assets/model-x.png",
     gallery: [
-      "assets/schematic-quadruped.svg"
+      "assets/model-x.png"
     ],
     videoUrl: "",
     pdfUrl: "assets/CV.pdf",
@@ -654,7 +656,7 @@ const COMPETITIONS_DATA = [
     organization: "Informatics Institute of Technology (IIT)",
     venue: "Colombo, Sri Lanka",
     date: "2025",
-    image: "assets/schematic-robotic-arm.svg",
+    image: "assets/model-x.png",
     tags: ["Model X", "Special Award", "IIT", "Technical Design", "NLP OSINT", "spaCy"],
     tagline: "Honored with the prestigious Special Award for Technical Design for our real-time OSINT NLP intelligence engine.",
     story: "Built and demonstrated a high-throughput open-source intelligence pipeline combining named entity recognition (NER), Sentence-BERT contextual clustering, and automated threat matrix scoring, recognized for exceptional architectural design."
