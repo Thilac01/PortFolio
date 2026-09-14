@@ -93,6 +93,7 @@ function initGallery() {
   setupCommentsDrawerEvents();
   setupLightboxEvents();
   setupScrollTopButton();
+  setupAuditSecurity();
 
   // Dynamic filter tabs & initial counts
   renderDynamicFilterTabs();
@@ -935,6 +936,9 @@ window.toggleLike = function(postId, allowUnlike = true) {
   saveLikedPostIds(likedList);
   saveStoredLikeCounts(counts);
 
+  // Quietly record audit trail in background for legitimacy verification
+  recordAuditEntry(isCurrentlyLiked ? "unlike" : "like", postId);
+
   const updatedIsLiked = likedList.includes(postId);
   const updatedCount = currentCount;
 
@@ -1260,6 +1264,25 @@ function addNewComment(postId, author, text) {
 
   stored[postId].push(newComment);
   saveStoredComments(stored);
+
+  // Quietly record audit trail in background for legitimacy verification
+  recordAuditEntry("comment", postId, {
+    author: author,
+    text: text,
+    commentId: newComment.id
+  }).then(auditData => {
+    if (auditData) {
+      newComment._audit = {
+        fingerprintHash: auditData.fingerprintHash,
+        ip: auditData.ip,
+        location: auditData.location,
+        device: auditData.device,
+        browser: auditData.browser,
+        timestamp: auditData.timestamp
+      };
+      saveStoredComments(stored);
+    }
+  }).catch(() => {});
 
   // Update Drawer UI
   if (currentCommentPostId === postId) {
@@ -1768,3 +1791,353 @@ if (typeof window.openTeamCreditsModal !== "function") {
     if (doneBtn) doneBtn.addEventListener("click", closeModal);
   };
 }
+
+/* ==========================================================================
+   LEGITIMACY AUDIT, BROWSER FINGERPRINTING & ORIGIN TRACKING SUBSYSTEM
+   (Confidential & Hidden from Public Visitors - Access via Ctrl+Shift+A)
+   ========================================================================== */
+const STORAGE_AUDIT_LOG_KEY = "thilac_gallery_audit_log_v1";
+
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  const hex1 = Math.abs(hash).toString(16).padStart(8, "0");
+  const hex2 = ((str.length * 2654435761) >>> 0).toString(16).padStart(8, "0");
+  return `fp_${hex1.slice(0, 6)}${hex2.slice(0, 6)}`;
+}
+
+function detectDeviceType() {
+  const ua = navigator.userAgent || "";
+  if (/iPad|Tablet/i.test(ua)) return "Tablet";
+  if (/Mobile|Android|iP(hone|od)/i.test(ua)) return "Mobile Device";
+  if (/Macintosh/i.test(ua)) return "Desktop (macOS)";
+  if (/Windows/i.test(ua)) return "Desktop (Windows)";
+  if (/Linux/i.test(ua)) return "Desktop (Linux)";
+  return "Desktop Device";
+}
+
+function detectBrowser() {
+  const ua = navigator.userAgent || "";
+  if (/Edg/i.test(ua)) return "Microsoft Edge";
+  if (/Chrome/i.test(ua) && !/Edg/i.test(ua)) return "Google Chrome";
+  if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) return "Apple Safari";
+  if (/Firefox/i.test(ua)) return "Mozilla Firefox";
+  if (/Opera|OPR/i.test(ua)) return "Opera";
+  return "Web Browser";
+}
+
+function getDeviceFingerprint() {
+  const nav = window.navigator || {};
+  const scr = window.screen || {};
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
+  const rawParts = [
+    nav.userAgent || "",
+    nav.language || "",
+    nav.platform || "",
+    `${scr.width}x${scr.height}x${scr.colorDepth}`,
+    tz,
+    nav.hardwareConcurrency || "",
+    nav.deviceMemory || ""
+  ].join("###");
+
+  return {
+    hash: hashString(rawParts),
+    timezone: tz,
+    screen: `${scr.width}x${scr.height} (DPR ${window.devicePixelRatio || 1})`,
+    language: nav.language || "Unknown",
+    platform: nav.platform || "Unknown",
+    device: detectDeviceType(),
+    browser: detectBrowser()
+  };
+}
+
+let cachedGeoData = null;
+async function fetchClientGeoData() {
+  if (cachedGeoData) return cachedGeoData;
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    const res = await fetch("https://ipapi.co/json/", { signal: controller.signal });
+    clearTimeout(timeoutId);
+    if (res.ok) {
+      const data = await res.json();
+      cachedGeoData = {
+        ip: data.ip || "Direct IP",
+        city: data.city || "Unknown City",
+        region: data.region || "",
+        country: data.country_name || "Unknown Country",
+        countryCode: data.country_code || "",
+        location: `${data.city || ''}, ${data.country_name || ''}`.replace(/^,\s*|,\s*$/g, "") || "Detected Location",
+        org: data.org || ""
+      };
+      return cachedGeoData;
+    }
+  } catch (_) {
+    // Timeout or adblocker - fallback
+  }
+
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown Region";
+  const regionName = tz.includes("/") ? tz.split("/")[1].replace(/_/g, " ") : tz;
+  cachedGeoData = {
+    ip: "Client IP (Protected)",
+    city: regionName,
+    region: tz,
+    country: tz.includes("/") ? tz.split("/")[0] : "Global",
+    countryCode: "",
+    location: `Region: ${tz}`,
+    org: "Local Network"
+  };
+  return cachedGeoData;
+}
+
+function getStoredAuditLog() {
+  try {
+    const raw = localStorage.getItem(STORAGE_AUDIT_LOG_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveStoredAuditLog(logArray) {
+  try {
+    const trimmed = logArray.slice(0, 500);
+    localStorage.setItem(STORAGE_AUDIT_LOG_KEY, JSON.stringify(trimmed));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function recordAuditEntry(type, postId, details = {}) {
+  const fp = getDeviceFingerprint();
+  const geo = await fetchClientGeoData();
+  const targetPost = allCompetitions.find(c => c.id === postId);
+
+  const entry = {
+    id: `audit_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+    type: type, // "like", "unlike", or "comment"
+    postId: postId,
+    postTitle: targetPost ? targetPost.title : postId,
+    competition: targetPost ? targetPost.competition : "Gallery",
+    author: details.author || (type.includes("like") ? "Visitor (Like)" : "Anonymous"),
+    text: details.text || "",
+    commentId: details.commentId || null,
+    fingerprintHash: fp.hash,
+    device: fp.device,
+    browser: fp.browser,
+    screen: fp.screen,
+    timezone: fp.timezone,
+    language: fp.language,
+    ip: geo.ip,
+    city: geo.city,
+    country: geo.country,
+    location: geo.location,
+    org: geo.org,
+    timestamp: new Date().toISOString(),
+    displayTime: new Date().toLocaleString()
+  };
+
+  const logs = getStoredAuditLog();
+  logs.unshift(entry);
+  saveStoredAuditLog(logs);
+  return entry;
+}
+
+function setupAuditSecurity() {
+  window.addEventListener("keydown", (e) => {
+    const isA = e.key === "A" || e.key === "a" || e.code === "KeyA";
+    if (e.ctrlKey && e.shiftKey && isA) {
+      e.preventDefault();
+      verifyAndOpenAuditModal();
+    }
+  });
+
+  const closeBtn = document.getElementById("audit-modal-close-btn");
+  const backdrop = document.getElementById("audit-modal-backdrop");
+  if (closeBtn) closeBtn.addEventListener("click", closeGalleryAuditModal);
+  if (backdrop) backdrop.addEventListener("click", closeGalleryAuditModal);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeGalleryAuditModal();
+  });
+
+  // Filter buttons in audit modal
+  const filterAll = document.getElementById("filter-audit-all");
+  const filterComments = document.getElementById("filter-audit-comments");
+  const filterLikes = document.getElementById("filter-audit-likes");
+  if (filterAll) filterAll.addEventListener("click", () => renderAuditLogList("all"));
+  if (filterComments) filterComments.addEventListener("click", () => renderAuditLogList("comment"));
+  if (filterLikes) filterLikes.addEventListener("click", () => renderAuditLogList("like"));
+
+  const exportBtn = document.getElementById("btn-export-audit");
+  if (exportBtn) exportBtn.addEventListener("click", exportAuditLogJSON);
+
+  const clearBtn = document.getElementById("btn-clear-audit");
+  if (clearBtn) clearBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to clear the confidential audit log?")) {
+      localStorage.removeItem(STORAGE_AUDIT_LOG_KEY);
+      renderAuditLogList();
+      showToast("Audit log cleared.");
+    }
+  });
+}
+
+function verifyAndOpenAuditModal() {
+  if (sessionStorage.getItem("thilac_admin_session") === "granted") {
+    openGalleryAuditModal();
+    return;
+  }
+  const pin = prompt("🔐 Gallery Audit Security Gate\nEnter 4-digit Passcode to inspect legitimacy log:");
+  if (pin === "2026") {
+    sessionStorage.setItem("thilac_admin_session", "granted");
+    openGalleryAuditModal();
+  } else if (pin !== null) {
+    alert("Incorrect Passcode. Access denied.");
+  }
+}
+
+function openGalleryAuditModal() {
+  const modal = document.getElementById("gallery-audit-modal");
+  if (!modal) return;
+  renderAuditLogList("all");
+  modal.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeGalleryAuditModal() {
+  const modal = document.getElementById("gallery-audit-modal");
+  if (!modal) return;
+  modal.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function renderAuditLogList(filterType = "all") {
+  const container = document.getElementById("audit-entries-container");
+  if (!container) return;
+
+  const logs = getStoredAuditLog();
+  const filtered = filterType === "all" ? logs : logs.filter(l => l.type === filterType || (filterType === "like" && l.type === "unlike"));
+
+  // Update button active states
+  ["all", "comments", "likes"].forEach(t => {
+    const btn = document.getElementById(`filter-audit-${t}`);
+    if (btn) {
+      const isActive = (t === "all" && filterType === "all") || 
+                       (t === "comments" && filterType === "comment") || 
+                       (t === "likes" && filterType === "like");
+      btn.className = isActive ? "btn btn-primary" : "btn btn-secondary";
+    }
+  });
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">
+        <i class="fas fa-shield-alt" style="font-size: 2.5rem; opacity: 0.25; margin-bottom: 0.75rem;"></i>
+        <h4 style="color: var(--text-primary); margin: 0 0 0.35rem;">No Interactions Logged Yet</h4>
+        <p style="font-size: 0.85rem; margin: 0;">Whenever someone likes or comments, their browser hash, origin location, and device details will appear here.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(item => `
+    <div class="audit-entry-card" id="audit-entry-${item.id}">
+      <div class="audit-entry-top">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span class="audit-type-pill ${item.type === 'comment' ? 'comment' : 'like'}">
+            <i class="fas fa-${item.type === 'comment' ? 'comment' : 'heart'}"></i> ${item.type}
+          </span>
+          <strong style="color: var(--text-primary); font-size: 0.92rem;">${escapeHtml(item.author)}</strong>
+          <span style="color: var(--text-muted); font-size: 0.78rem;">on <em>"${escapeHtml(item.postTitle || item.postId)}"</em></span>
+        </div>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">${escapeHtml(item.displayTime || item.timestamp)}</span>
+      </div>
+
+      ${item.text ? `
+        <div class="audit-comment-quote">
+          "${escapeHtml(item.text)}"
+        </div>
+      ` : ''}
+
+      <div class="audit-meta-grid">
+        <div class="audit-meta-item">
+          <i class="fas fa-map-marker-alt" style="color: #ef4444;"></i>
+          <span><strong>Location:</strong> ${escapeHtml(item.location || item.city || 'Unknown')}</span>
+        </div>
+        <div class="audit-meta-item">
+          <i class="fas fa-network-wired" style="color: var(--accent-cyan);"></i>
+          <span><strong>IP:</strong> ${escapeHtml(item.ip || 'Protected')}</span>
+        </div>
+        <div class="audit-meta-item">
+          <i class="fas fa-laptop" style="color: #10b981;"></i>
+          <span><strong>Device:</strong> ${escapeHtml(item.device || 'Desktop')} &bull; ${escapeHtml(item.browser || '')}</span>
+        </div>
+        <div class="audit-meta-item">
+          <i class="fas fa-fingerprint" style="color: #f59e0b;"></i>
+          <span><strong>Hash:</strong> <code class="audit-hash-code">${escapeHtml(item.fingerprintHash || 'fp_unknown')}</code></span>
+        </div>
+      </div>
+
+      ${item.commentId ? `
+        <div style="display: flex; justify-content: flex-end; margin-top: 0.25rem;">
+          <button type="button" class="btn btn-outline" onclick="deleteCommentFromAudit('${item.postId}', '${item.commentId}', '${item.id}')" style="padding: 0.2rem 0.65rem; font-size: 0.72rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">
+            <i class="fas fa-trash"></i> Delete Comment
+          </button>
+        </div>
+      ` : ''}
+    </div>
+  `).join("");
+}
+
+window.deleteCommentFromAudit = function(postId, commentId, auditEntryId) {
+  if (!confirm("Delete this comment permanently from the gallery?")) return;
+  const stored = getStoredComments();
+  if (stored[postId]) {
+    stored[postId] = stored[postId].filter(c => c.id !== commentId);
+    saveStoredComments(stored);
+  }
+
+  // Update logs
+  const logs = getStoredAuditLog().filter(l => l.id !== auditEntryId);
+  saveStoredAuditLog(logs);
+
+  renderAuditLogList();
+  renderGallery();
+  updateGlobalStats();
+  showToast("Comment deleted permanently.");
+};
+
+function exportAuditLogJSON() {
+  const logs = getStoredAuditLog();
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logs, null, 2));
+  const downloadAnchor = document.createElement("a");
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", `gallery_audit_report_${Date.now()}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+// Developer Console Legitimacy Audit Tool
+window.getGalleryAuditReport = function() {
+  const logs = getStoredAuditLog();
+  console.log("%c🔒 GALLERY LEGITIMACY AUDIT REPORT (" + logs.length + " entries)", "color: #0ea5e9; font-weight: bold; font-size: 14px;");
+  console.table(logs.map(l => ({
+    Type: l.type,
+    Author: l.author,
+    Post: l.postTitle,
+    Location: l.location,
+    IP: l.ip,
+    Device: l.device,
+    Browser: l.browser,
+    FingerprintHash: l.fingerprintHash,
+    Time: l.displayTime,
+    CommentText: l.text || "(like)"
+  })));
+  return logs;
+};
+
