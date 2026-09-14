@@ -380,6 +380,86 @@ body.dark-theme .hud-badge {
   color: var(--text-muted);
 }
 
+/* Executive Pipeline Stepper Bar */
+.pallet-stepper-bar {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.65rem 1rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+body.dark-theme .pallet-stepper-bar {
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.stepper-scroll-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: max-content;
+}
+
+.stepper-step-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.stepper-step-item:hover {
+  border-color: var(--accent-cyan);
+  transform: translateY(-1px);
+}
+
+.stepper-step-item.active {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.25);
+}
+
+.stepper-step-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+}
+
+.stepper-step-item.active .stepper-step-circle {
+  background: var(--accent-cyan);
+  color: #ffffff;
+}
+
+.stepper-step-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.stepper-step-item.active .stepper-step-label {
+  color: var(--text-primary);
+}
+
+.stepper-step-arrow {
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  opacity: 0.5;
+}
+
 /* Pallet Stage Area */
 .pallet-stage-area {
   position: relative;
@@ -561,6 +641,42 @@ body.dark-theme .joint-core-disc {
   color: #64748b;
 }
 
+/* 7-Stage Progression Pills */
+.pill-problem {
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+}
+
+.pill-built {
+  background: rgba(14, 165, 233, 0.15);
+  color: #0284c7;
+}
+
+.pill-contribution {
+  background: rgba(168, 85, 247, 0.15);
+  color: #9333ea;
+}
+
+.pill-result {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+.pill-video {
+  background: rgba(244, 63, 94, 0.15);
+  color: #e11d48;
+}
+
+.pill-github {
+  background: rgba(59, 130, 246, 0.15);
+  color: #2563eb;
+}
+
+.pill-report {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
 body.dark-theme .pill-completed {
   background: rgba(16, 185, 129, 0.2);
   color: #34d399;
@@ -569,6 +685,41 @@ body.dark-theme .pill-completed {
 body.dark-theme .pill-active {
   background: rgba(56, 189, 248, 0.2);
   color: #38bdf8;
+}
+
+body.dark-theme .pill-problem {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+}
+
+body.dark-theme .pill-built {
+  background: rgba(14, 165, 233, 0.25);
+  color: #38bdf8;
+}
+
+body.dark-theme .pill-contribution {
+  background: rgba(168, 85, 247, 0.25);
+  color: #c084fc;
+}
+
+body.dark-theme .pill-result {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+}
+
+body.dark-theme .pill-video {
+  background: rgba(244, 63, 94, 0.25);
+  color: #fb7185;
+}
+
+body.dark-theme .pill-github {
+  background: rgba(59, 130, 246, 0.25);
+  color: #60a5fa;
+}
+
+body.dark-theme .pill-report {
+  background: rgba(239, 68, 68, 0.25);
+  color: #f87171;
 }
 
 .node-title {
@@ -660,6 +811,102 @@ body.dark-theme .pallet-inspector-panel {
 .inspector-desc {
   font-size: 0.92rem;
   color: var(--text-secondary);
+}
+
+/* Action Rows & Media Deep Links */
+.inspector-action-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.6rem 0;
+  flex-wrap: wrap;
+}
+
+.btn-workflow-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0.45rem 1.1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.btn-workflow-action.btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.btn-workflow-action.btn-primary:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(14, 165, 233, 0.45);
+}
+
+.btn-workflow-action.btn-outline {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.btn-workflow-action.btn-outline:hover {
+  background: rgba(14, 165, 233, 0.12);
+  transform: translateY(-1px);
+}
+
+.btn-workflow-action.btn-secondary {
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.btn-workflow-action.btn-secondary:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+/* Metrics Chip Previews */
+.inspector-metrics-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.inspector-metric-chip {
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+}
+
+body.dark-theme .inspector-metric-chip {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+.metric-chip-label {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+.metric-chip-value {
+  color: var(--accent-cyan);
+  font-weight: 700;
 }
 
 .inspector-telemetry {

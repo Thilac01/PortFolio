@@ -304,18 +304,19 @@ function openProjectModal(projectId) {
     }
   }
 
+  // Setup Media Tabs (Workflow, Gallery, Video, PDF)
+  setupModalMediaTabs(project);
+
   // Render Workflow Canvas
   const canvasContainer = document.getElementById("modal-workflow-canvas-container");
   if (canvasContainer) {
     activeWorkflowCanvas = new RoboticWorkflowCanvas(canvasContainer, {
       interactive: true,
-      accentColor: "#38bdf8"
+      accentColor: "#38bdf8",
+      project: project
     });
     activeWorkflowCanvas.render(project.workflow || []);
   }
-
-  // Setup Media Tabs (Workflow, Gallery, Video, PDF)
-  setupModalMediaTabs(project);
 
   // Render Full Metrics Table
   renderProjectMetricsTable(project);
@@ -343,6 +344,7 @@ function setupModalMediaTabs(project) {
       requestAnimationFrame(() => activeWorkflowCanvas.drawRoboticConduits());
     }
   }
+  window.switchModalTab = switchTab;
 
   tabs.forEach(tab => {
     tab.onclick = () => switchTab(tab.dataset.view);

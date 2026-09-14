@@ -1,7 +1,8 @@
 /**
  * Interactive Robotic Workflow Canvas ("Pallet with Robot-Connected Nodes")
- * Renders an animated cyber-mechanical pipeline with SVG articulated conduits,
- * glowing pulse nodes, and interactive parameter inspection.
+ * Implements the verified engineering lifecycle progression:
+ * Problem → What I Built → My Contribution → Measurable Result → Video → GitHub → Technical Report
+ * Author: Thilac Ramesh Portfolio System
  */
 
 class RoboticWorkflowCanvas {
@@ -10,6 +11,7 @@ class RoboticWorkflowCanvas {
     this.options = Object.assign({
       interactive: true,
       accentColor: "#38bdf8",
+      project: null,
       onNodeSelect: null
     }, options);
     this.activeNodeIndex = 0;
@@ -38,15 +40,46 @@ class RoboticWorkflowCanvas {
     hudBar.innerHTML = `
       <div class="hud-left">
         <span class="hud-indicator live-pulse"></span>
-        <span class="hud-title"><i class="fas fa-project-diagram"></i> KINEMATIC WORKFLOW PALETTE</span>
-        <span class="hud-badge">${workflowSteps.length} STAGES</span>
+        <span class="hud-title"><i class="fas fa-project-diagram"></i> ENGINEERING WORKFLOW PIPELINE</span>
+        <span class="hud-badge">${workflowSteps.length} VERIFIED STAGES</span>
       </div>
       <div class="hud-right">
-        <span class="hud-metric"><i class="fas fa-bolt"></i> CONDUIT: ACTIVE</span>
-        <span class="hud-metric"><i class="fas fa-microchip"></i> ACSAR-E READY</span>
+        <span class="hud-metric"><i class="fas fa-shield-alt" style="color: #10b981;"></i> RIGOROUS VALIDATION</span>
+        <span class="hud-metric"><i class="fas fa-file-pdf" style="color: #ef4444;"></i> REPORT BACKED</span>
       </div>
     `;
     wrapper.appendChild(hudBar);
+
+    // Executive Pipeline Stepper Bar: Problem → What I Built → My Contribution → Measurable Result → Video → GitHub → Technical Report
+    const stepperBar = document.createElement("div");
+    stepperBar.className = "pallet-stepper-bar";
+    stepperBar.innerHTML = `
+      <div class="stepper-scroll-container">
+        ${workflowSteps.map((step, idx) => {
+          const icon = this.getStepIcon(step.type || step.stageKey);
+          const label = step.stageLabel || step.title || `Stage ${idx + 1}`;
+          const isSelected = idx === this.activeNodeIndex;
+          return `
+            <div class="stepper-step-item ${isSelected ? 'active' : ''}" data-step-index="${idx}">
+              <div class="stepper-step-circle">
+                <i class="${icon}"></i>
+              </div>
+              <span class="stepper-step-label">${this.escapeHTML(label)}</span>
+            </div>
+            ${idx < workflowSteps.length - 1 ? `<div class="stepper-step-arrow"><i class="fas fa-chevron-right"></i></div>` : ''}
+          `;
+        }).join("")}
+      </div>
+    `;
+
+    // Add click event to stepper items
+    stepperBar.querySelectorAll(".stepper-step-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const idx = parseInt(item.dataset.stepIndex, 10);
+        this.selectNode(idx, workflowSteps);
+      });
+    });
+    wrapper.appendChild(stepperBar);
 
     // Main Stage Area (Nodes + Canvas Connections)
     const stageArea = document.createElement("div");
@@ -65,12 +98,12 @@ class RoboticWorkflowCanvas {
 
     workflowSteps.forEach((step, idx) => {
       const nodeCard = document.createElement("div");
-      nodeCard.className = `pallet-node-card status-${step.status || "active"} ${idx === this.activeNodeIndex ? "selected" : ""}`;
+      nodeCard.className = `pallet-node-card status-${step.status || "completed"} ${idx === this.activeNodeIndex ? "selected" : ""} type-${step.type || step.stageKey || 'generic'}`;
       nodeCard.dataset.nodeIndex = idx;
       nodeCard.setAttribute("tabindex", "0");
 
-      const iconType = this.getStepIcon(step.type || "hardware");
-      const statusLabel = step.status ? step.status.toUpperCase() : "ACTIVE";
+      const iconType = this.getStepIcon(step.type || step.stageKey);
+      const stageLabel = (step.stageLabel || `STAGE 0${idx + 1}`).toUpperCase();
 
       nodeCard.innerHTML = `
         <div class="node-robot-joint">
@@ -83,11 +116,11 @@ class RoboticWorkflowCanvas {
         </div>
         <div class="node-content">
           <div class="node-stage-meta">
-            <span class="stage-number">STAGE 0${idx + 1}</span>
-            <span class="stage-status-pill pill-${step.status || "active"}">${statusLabel}</span>
+            <span class="stage-number">0${idx + 1}</span>
+            <span class="stage-status-pill pill-${step.type || step.stageKey || 'active'}">${stageLabel}</span>
           </div>
           <h4 class="node-title">${this.escapeHTML(step.title || `Stage ${idx + 1}`)}</h4>
-          <p class="node-desc">${this.escapeHTML(step.desc || "Operational phase execution parameters.")}</p>
+          <p class="node-desc">${this.escapeHTML(step.desc || "Execution details and engineering parameters.")}</p>
         </div>
       `;
 
@@ -125,13 +158,23 @@ class RoboticWorkflowCanvas {
 
   selectNode(index, steps) {
     this.activeNodeIndex = index;
+
+    // Update node cards
     const cards = this.container.querySelectorAll(".pallet-node-card");
     cards.forEach((c, idx) => {
       if (idx === index) {
         c.classList.add("selected");
+        // Scroll node into view smoothly
+        c.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
       } else {
         c.classList.remove("selected");
       }
+    });
+
+    // Update stepper items
+    const stepperItems = this.container.querySelectorAll(".stepper-step-item");
+    stepperItems.forEach((s, idx) => {
+      s.classList.toggle("active", idx === index);
     });
 
     this.updateInspector(index, steps);
@@ -148,34 +191,99 @@ class RoboticWorkflowCanvas {
 
     const step = steps[index];
     const total = steps.length;
-    const iconType = this.getStepIcon(step.type);
+    const iconType = this.getStepIcon(step.type || step.stageKey);
+    const stageName = step.stageLabel || `Stage 0${index + 1}`;
+    const project = this.options.project || {};
+
+    let actionButtonHtml = "";
+
+    // Contextual Action Buttons based on stage type
+    if (step.stageKey === "video" || step.type === "video") {
+      const hasVideo = !!project.videoUrl;
+      actionButtonHtml = `
+        <div class="inspector-action-row">
+          ${hasVideo ? `
+            <button type="button" class="btn-workflow-action btn-primary" onclick="if(window.switchModalTab) window.switchModalTab('video');">
+              <i class="fas fa-play-circle"></i> Watch Video Demonstration
+            </button>
+          ` : `
+            <button type="button" class="btn-workflow-action btn-secondary" onclick="if(window.switchModalTab) window.switchModalTab('gallery');">
+              <i class="fas fa-cubes"></i> View 3D CAD Walkthrough
+            </button>
+          `}
+          ${project.videoUrl ? `
+            <a href="${project.videoUrl}" target="_blank" rel="noreferrer" class="btn-workflow-action btn-outline">
+              <i class="fas fa-external-link-alt"></i> Open on YouTube
+            </a>
+          ` : ''}
+        </div>
+      `;
+    } else if (step.stageKey === "github" || step.type === "github") {
+      const githubUrl = step.actionUrl || project.liveUrl || "https://github.com/Thilac01";
+      actionButtonHtml = `
+        <div class="inspector-action-row">
+          <a href="${githubUrl}" target="_blank" rel="noreferrer" class="btn-workflow-action btn-primary">
+            <i class="fab fa-github"></i> Open GitHub Repository
+          </a>
+          <span style="font-size: 0.8rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fas fa-code-branch" style="color: var(--accent-cyan);"></i> Verified Open Source / CAD Assets
+          </span>
+        </div>
+      `;
+    } else if (step.stageKey === "report" || step.type === "report") {
+      const pdfUrl = step.actionUrl || project.pdfUrl || "assets/CV.pdf";
+      actionButtonHtml = `
+        <div class="inspector-action-row">
+          <button type="button" class="btn-workflow-action btn-primary" onclick="if(window.switchModalTab) window.switchModalTab('pdf');">
+            <i class="fas fa-file-pdf"></i> Inspect Technical Report in PDF Viewer
+          </button>
+          <a href="${pdfUrl}" target="_blank" rel="noreferrer" class="btn-workflow-action btn-outline" download>
+            <i class="fas fa-download"></i> Download PDF
+          </a>
+        </div>
+      `;
+    } else if (step.stageKey === "result" || step.type === "result") {
+      if (project.metrics && project.metrics.length > 0) {
+        actionButtonHtml = `
+          <div class="inspector-metrics-preview">
+            ${project.metrics.map(m => `
+              <div class="inspector-metric-chip">
+                <span class="metric-chip-label">${this.escapeHTML(m.label)}</span>
+                <span class="metric-chip-value">${this.escapeHTML(m.value)}</span>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+    }
 
     inspector.innerHTML = `
       <div class="inspector-card">
         <div class="inspector-header">
           <div class="inspector-badge">
             <i class="${iconType}"></i>
-            <span>STAGE 0${index + 1} OF 0${total}</span>
+            <span>STAGE 0${index + 1} OF 0${total} &bull; ${stageName.toUpperCase()}</span>
           </div>
-          <div class="inspector-status status-${step.status || "active"}">
+          <div class="inspector-status status-${step.status || "completed"}">
             <span class="dot"></span>
-            ${(step.status || "ACTIVE").toUpperCase()}
+            VERIFIED STAGE
           </div>
         </div>
         <h3 class="inspector-title">${this.escapeHTML(step.title)}</h3>
         <p class="inspector-desc">${this.escapeHTML(step.desc)}</p>
+        ${actionButtonHtml}
         <div class="inspector-telemetry">
           <div class="telemetry-pill">
-            <span class="label">MODULE TYPE</span>
-            <span class="val">${(step.type || "HARDWARE").toUpperCase()}</span>
+            <span class="label">STAGE CATEGORY</span>
+            <span class="val">${(step.stageLabel || step.type || "ENGINEERING").toUpperCase()}</span>
           </div>
           <div class="telemetry-pill">
-            <span class="label">BUS PROTOCOL</span>
-            <span class="val">CAN / ROS 2</span>
+            <span class="label">METHODOLOGY</span>
+            <span class="val">${step.stageKey === "report" ? "PEER-REVIEWED / ACADEMIC" : step.stageKey === "github" ? "GIT REPOSITORY" : "VERIFIED CALCULATION"}</span>
           </div>
           <div class="telemetry-pill">
-            <span class="label">VERIFICATION</span>
-            <span class="val">${step.status === "completed" ? "PASS (100%)" : "IN-PROGRESS"}</span>
+            <span class="label">STATUS</span>
+            <span class="val" style="color: #10b981;"><i class="fas fa-check-circle"></i> COMPLETE</span>
           </div>
         </div>
       </div>
@@ -216,16 +324,13 @@ class RoboticWorkflowCanvas {
       const c1 = cards[i].getBoundingClientRect();
       const c2 = cards[i + 1].getBoundingClientRect();
 
-      // Calculate anchor joints relative to stageArea
       const x1 = (c1.left + c1.width / 2) - rect.left;
       const y1 = (c1.bottom) - rect.top - 8;
       const x2 = (c2.left + c2.width / 2) - rect.left;
       const y2 = (c2.top) - rect.top + 8;
 
-      // Handle horizontal or vertical layouts depending on viewport
       let d = "";
       if (Math.abs(y2 - y1) < 60) {
-        // Horizontal arrangement
         const hx1 = (c1.right) - rect.left;
         const hy1 = (c1.top + c1.height / 2) - rect.top;
         const hx2 = (c2.left) - rect.left;
@@ -233,19 +338,15 @@ class RoboticWorkflowCanvas {
         const midX = (hx1 + hx2) / 2;
         d = `M ${hx1} ${hy1} C ${midX} ${hy1}, ${midX} ${hy2}, ${hx2} ${hy2}`;
       } else {
-        // Vertical or staggered arrangement
         const midY = (y1 + y2) / 2;
         d = `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
       }
 
-      const isCompleted = cards[i].classList.contains("status-completed");
-      const strokeColor = isCompleted ? "#10b981" : "#38bdf8";
+      const strokeColor = "#38bdf8";
 
       pathsHtml += `
-        <!-- Robotic Arm / Conduit Cable -->
-        <path d="${d}" fill="none" stroke="rgba(15, 23, 42, 0.6)" stroke-width="6" stroke-linecap="round"/>
-        <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
-        <!-- Animated Pulse Beam -->
+        <path d="${d}" fill="none" stroke="rgba(15, 23, 42, 0.4)" stroke-width="6" stroke-linecap="round"/>
+        <path d="${d}" fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
         <path d="${d}" fill="none" stroke="#e0f2fe" stroke-width="3" stroke-dasharray="6 28" class="conduit-signal-pulse" filter="url(#glow)"/>
       `;
     }
@@ -255,26 +356,26 @@ class RoboticWorkflowCanvas {
 
   getStepIcon(type = "") {
     switch (type.toLowerCase()) {
+      case "problem": return "fas fa-triangle-exclamation";
+      case "built": return "fas fa-cubes";
+      case "contribution": return "fas fa-user-gear";
+      case "result": return "fas fa-chart-line";
+      case "video": return "fas fa-play";
+      case "github": return "fab fa-github";
+      case "report": return "fas fa-file-pdf";
       case "cad": return "fas fa-cube";
-      case "analysis":
-      case "calculation": return "fas fa-chart-line";
       case "hardware": return "fas fa-microchip";
       case "algorithmic":
       case "code": return "fas fa-code";
       case "integration": return "fas fa-network-wired";
-      case "control": return "fas fa-gamepad";
       case "manufacturing": return "fas fa-tools";
-      case "validation":
-      case "qa": return "fas fa-check-double";
-      case "research":
-      case "mathematics": return "fas fa-atom";
-      case "peer-review": return "fas fa-scroll";
+      case "research": return "fas fa-atom";
       default: return "fas fa-cog";
     }
   }
 
   escapeHTML(str = "") {
-    return str.replace(/[&<>'"]/g, 
+    return String(str).replace(/[&<>'"]/g, 
       tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
     );
   }
