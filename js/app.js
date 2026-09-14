@@ -1335,3 +1335,58 @@ window.openTeamCreditsModal = function(compId) {
   if (doneBtn) doneBtn.addEventListener("click", closeModal);
 };
 
+/* ==========================================================================
+   CLIPBOARD & CITATION UTILITIES
+   ========================================================================== */
+function showCopyToast(msg = "Copied to clipboard!") {
+  const toast = document.getElementById("copy-toast");
+  const msgEl = document.getElementById("copy-toast-msg");
+  if (!toast) return;
+
+  if (msgEl) msgEl.textContent = msg;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
+window.copyEmailToClipboard = function() {
+  const email = "thilacramesh@gmail.com";
+  navigator.clipboard.writeText(email).then(() => {
+    showCopyToast("Email copied: thilacramesh@gmail.com");
+  }).catch(() => {
+    const tempInput = document.createElement("input");
+    tempInput.value = email;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    showCopyToast("Email copied: thilacramesh@gmail.com");
+  });
+};
+
+window.copyBibtexCitation = function() {
+  const bibtex = `@article{ramesh2026hdrm,
+  title={Higher-Dimensional Radial Model (HDRM): A Classical Geometric Framework for Probabilistic Distributions},
+  author={Ramesh, Thilac},
+  journal={International Journal of Theoretical Physics},
+  publisher={Springer Nature},
+  year={2026},
+  note={Under Review}
+}`;
+
+  navigator.clipboard.writeText(bibtex).then(() => {
+    showCopyToast("BibTeX Citation Copied!");
+  }).catch(() => {
+    const tempTextarea = document.createElement("textarea");
+    tempTextarea.value = bibtex;
+    document.body.appendChild(tempTextarea);
+    tempTextarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempTextarea);
+    showCopyToast("BibTeX Citation Copied!");
+  });
+};
+
+
