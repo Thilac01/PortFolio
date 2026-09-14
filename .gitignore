@@ -1,0 +1,14 @@
+# Environment Secrets (Do not commit passwords or API keys!)
+.env
+.env.local
+.env.*.local
+
+# Node modules
+node_modules/
+npm-debug.log*
+
+# System and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

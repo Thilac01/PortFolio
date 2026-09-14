@@ -551,27 +551,114 @@ function initContactForm() {
   const form = document.getElementById("contact-form");
   if (!form) return;
 
-  form.addEventListener("submit", (e) => {
+  const statusBox = document.getElementById("contact-status");
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = form.querySelector('button[type="submit"]');
     const originalText = btn.innerHTML;
 
+    const nameInput = document.getElementById("contact-name");
+    const emailInput = document.getElementById("contact-email");
+    const msgInput = document.getElementById("contact-msg");
+
+    const name = (nameInput?.value || "").trim();
+    const email = (emailInput?.value || "").trim();
+    const message = (msgInput?.value || "").trim();
+
+    if (!name || !email || !message) {
+      if (statusBox) {
+        statusBox.style.display = "block";
+        statusBox.style.background = "rgba(239, 68, 68, 0.12)";
+        statusBox.style.border = "1px solid rgba(239, 68, 68, 0.35)";
+        statusBox.style.color = "#ef4444";
+        statusBox.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please fill in all fields before transmitting.';
+      }
+      return;
+    }
+
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transmitting Dispatch...';
     btn.disabled = true;
 
-    setTimeout(() => {
+    if (statusBox) {
+      statusBox.style.display = "none";
+    }
+
+    try {
+      // First attempt: Serverless API endpoint (if hosted with Vercel/Node backend)
+      let delivered = false;
+      try {
+        const apiRes = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, message })
+        });
+        if (apiRes.ok) {
+          delivered = true;
+        }
+      } catch (_) {
+        // Fall back to FormSubmit relay below
+      }
+
+      // If /api/contact is not available (e.g. static GitHub Pages), dispatch via direct cloud email relay
+      if (!delivered) {
+        const relayRes = await fetch("https://formsubmit.co/ajax/thilacramesh@gmail.com", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            message: message,
+            _subject: `⚡ Portfolio Contact Dispatch from ${name}`,
+            _replyto: email,
+            _template: "table",
+            _captcha: "false"
+          })
+        });
+
+        if (!relayRes.ok) {
+          throw new Error("Relay response status: " + relayRes.status);
+        }
+      }
+
+      // Success feedback
       btn.innerHTML = '<i class="fas fa-check-circle"></i> Message Transmitted!';
       btn.style.background = "#10b981";
       btn.style.borderColor = "#10b981";
       form.reset();
+
+      if (statusBox) {
+        statusBox.style.display = "block";
+        statusBox.style.background = "rgba(16, 185, 129, 0.12)";
+        statusBox.style.border = "1px solid rgba(16, 185, 129, 0.35)";
+        statusBox.style.color = "#10b981";
+        statusBox.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Dispatch Transmitted!</strong> Your transmission has been delivered to <strong>thilacramesh@gmail.com</strong>.';
+      }
 
       setTimeout(() => {
         btn.innerHTML = originalText;
         btn.disabled = false;
         btn.style.background = "";
         btn.style.borderColor = "";
-      }, 4000);
-    }, 1200);
+      }, 5000);
+
+    } catch (error) {
+      console.warn("Direct transmission relay issue, providing mailto fallback:", error);
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Transmission';
+      btn.disabled = false;
+
+      if (statusBox) {
+        const mailtoHref = `mailto:thilacramesh@gmail.com?subject=${encodeURIComponent("Portfolio Contact: " + name)}&body=${encodeURIComponent("Sender: " + name + " (" + email + ")\n\n" + message)}`;
+        statusBox.style.display = "block";
+        statusBox.style.background = "rgba(245, 158, 11, 0.12)";
+        statusBox.style.border = "1px solid rgba(245, 158, 11, 0.35)";
+        statusBox.style.color = "#d97706";
+        statusBox.innerHTML = `<i class="fas fa-info-circle"></i> Notice: Network relay paused. <a href="${mailtoHref}" style="color: #d97706; font-weight: 700; text-decoration: underline;">Click here to dispatch directly via your email client</a>.`;
+      }
+    }
   });
 }
 
