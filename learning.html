@@ -54,7 +54,10 @@
           <a href="competitions.html" class="floating-back-link" style="font-size: 0.82rem;">
             <i class="fas fa-trophy"></i> Competitions
           </a>
-          <button class="btn-add-study-log" onclick="openAddStudyModal()" style="font-size: 0.78rem; padding: 0.4rem 0.9rem;">
+          <button class="study-admin-lock-btn" id="study-admin-lock-btn" title="Toggle Admin Permissions (Ctrl+Shift+A)">
+            <i class="fas fa-lock" id="study-lock-icon"></i> <span id="study-lock-label">Locked</span>
+          </button>
+          <button class="btn-add-study-log" onclick="handleAddClick()" style="font-size: 0.78rem; padding: 0.4rem 0.9rem;">
             <i class="fas fa-plus"></i> Log Study Note
           </button>
         </div>
@@ -97,7 +100,7 @@
           <button class="btn btn-outline" onclick="exportLearningJson()" style="font-size: 0.78rem; padding: 0.45rem 0.9rem;" title="Export all logs as JSON">
             <i class="fas fa-code"></i> Export JSON
           </button>
-          <button class="btn-add-study-log" onclick="openAddStudyModal()">
+          <button class="btn-add-study-log" onclick="handleAddClick()">
             <i class="fas fa-plus-circle"></i> + Add Entry
           </button>
         </div>
@@ -192,7 +195,7 @@
           <div style="font-size: 0.75rem; font-weight: 700; color: #10b981; letter-spacing: 0.05em; text-transform: uppercase;">
             <i class="fas fa-plus-circle"></i> Self-Service Research Log
           </div>
-          <h2 style="font-size: 1.25rem;">Log New Study Topic or Proof</h2>
+          <h2 style="font-size: 1.25rem;" id="add-study-modal-heading">Log New Study Topic or Proof</h2>
         </div>
         <button class="modal-close-btn" aria-label="Close modal">&times;</button>
       </div>
@@ -226,6 +229,14 @@
             <input type="text" id="input-status" class="form-control" placeholder="e.g. Mastered &amp; In Production, Lab Verified, Active Research" style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);">
           </div>
 
+          <!-- Direct Google Colab Notebook Field -->
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.3rem;">
+              <i class="fas fa-file-code" style="color: #f59e0b;"></i> Google Colab Notebook URL
+            </label>
+            <input type="url" id="input-colab" class="form-control" placeholder="https://colab.research.google.com/drive/..." style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);">
+          </div>
+
           <div>
             <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">Video Demo / Screencast URL (YouTube Embed / Link)</label>
             <input type="url" id="input-video" class="form-control" placeholder="https://www.youtube-nocookie.com/embed/..." style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);">
@@ -256,6 +267,27 @@
             <button type="submit" class="btn btn-primary" style="background: #10b981; border-color: #10b981;">Save to Lab Journal</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       PASSCODE PERMISSION MODAL (Ctrl + Shift + A / Lock Button)
+       ======================================================================== -->
+  <div class="modal-backdrop" id="study-pin-modal" role="dialog" aria-modal="true">
+    <div class="study-pin-dialog">
+      <div class="study-pin-icon"><i class="fas fa-shield-alt"></i></div>
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.35rem;">Study Lab Security Gate</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0 0 1.25rem; line-height: 1.45;">Enter your 4-digit passcode to unlock adding, editing, and removing research notes.</p>
+      <div class="study-pin-inputs">
+        <input type="password" maxlength="1" class="study-pin-digit" autofocus autocomplete="off">
+        <input type="password" maxlength="1" class="study-pin-digit" autocomplete="off">
+        <input type="password" maxlength="1" class="study-pin-digit" autocomplete="off">
+        <input type="password" maxlength="1" class="study-pin-digit" autocomplete="off">
+      </div>
+      <div id="study-pin-error" style="color: #e11d48; font-size: 0.8rem; min-height: 1.2rem; font-weight: 600; margin-bottom: 0.75rem;"></div>
+      <div style="display: flex; gap: 0.5rem; width: 100%;">
+        <button type="button" class="btn btn-secondary modal-close-btn" style="flex: 1;">Cancel</button>
       </div>
     </div>
   </div>

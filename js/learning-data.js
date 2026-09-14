@@ -17,6 +17,8 @@ const DEFAULT_LEARNING_LOGS = [
     hoursLogged: "140+ hrs",
     videoUrl: "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
     videoTitle: "FAST-LIO2 Point Cloud Undistortion & IESKF Convergence Demonstration",
+    colabUrl: "https://colab.research.google.com/drive/1example_lidar_slam_ieskf",
+    githubRepoUrl: "https://github.com/Thilac01",
     images: [
       "assets/schematic-quadruped.svg",
       "assets/unitree-go2-hero.png"
@@ -200,6 +202,8 @@ ros2 action send_goal /navigate_through_poses nav2_msgs/action/NavigateThroughPo
     hoursLogged: "160+ hrs",
     videoUrl: "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
     videoTitle: "12-DoF Forward/Inverse Kinematics & Joint Torque Profiling in MuJoCo",
+    colabUrl: "https://colab.research.google.com/drive/1example_quadruped_ik_simulation",
+    githubRepoUrl: "https://github.com/Thilac01",
     images: [
       "assets/unitree-go2-team.png",
       "assets/unitree-go2-robot.png"
@@ -262,6 +266,8 @@ void computeLegIK(double x, double y, double z, bool is_right, double& q1, doubl
     hoursLogged: "150+ hrs",
     videoUrl: "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
     videoTitle: "Epicyclic Planetary Gearbox Assembly & Lewis Tooth Stress Analysis in SOLIDWORKS",
+    colabUrl: "https://colab.research.google.com/drive/1example_gear_stress_calculator",
+    githubRepoUrl: "https://github.com/Thilac01",
     images: [
       "assets/meat-mincer-assembly.png",
       "assets/schematic-planetary.svg"
@@ -366,6 +372,8 @@ bambu-studio --slice 0 --orient-part --infill-type gyroid --infill-density 40% \
     hoursLogged: "95+ hrs",
     videoUrl: "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
     videoTitle: "Real-Time NLP OSINT Threat Matrix Architecture & Vector Semantic Search",
+    colabUrl: "https://colab.research.google.com/drive/1example_spacy_sbert_clustering",
+    githubRepoUrl: "https://github.com/Thilac01",
     images: [
       "assets/model-x.png"
     ],

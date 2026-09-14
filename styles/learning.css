@@ -603,3 +603,202 @@ body.dark-theme .proof-indicator-pill {
   70% { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(14, 165, 233, 0); }
   100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
 }
+
+/* Google Colab Integration Styles */
+.proof-indicator-pill.has-colab {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.btn-colab-launch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #d97706;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+  transition: all 0.2s ease;
+}
+
+body.dark-theme .btn-colab-launch {
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.btn-colab-launch:hover {
+  background: #f59e0b;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.study-colab-card {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.07) 0%, rgba(217, 119, 6, 0.07) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+@media (min-width: 600px) {
+  .study-colab-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.study-colab-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.study-colab-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+/* Admin Authorization & Lock Controls */
+.study-admin-lock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.study-admin-lock-btn:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.study-admin-lock-btn.unlocked {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #10b981;
+}
+
+/* Card Admin Action Buttons (Hidden until authenticated) */
+.card-admin-actions {
+  display: none;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+body.study-admin-unlocked .card-admin-actions {
+  display: flex;
+}
+
+.btn-card-admin {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn-card-admin:hover {
+  transform: scale(1.1);
+}
+
+.btn-card-admin.btn-edit:hover {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.btn-card-admin.btn-delete:hover {
+  background: rgba(225, 29, 72, 0.15);
+  border-color: #e11d48;
+  color: #e11d48;
+}
+
+/* Admin Passcode Gate Modal for Study Lab */
+.study-pin-dialog {
+  max-width: 380px;
+  text-align: center;
+  padding: 2.25rem 2rem;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-xl);
+}
+
+body.dark-theme .study-pin-dialog {
+  background: #0f172a;
+  border-color: var(--border-bright);
+}
+
+.study-pin-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(14, 165, 233, 0.12);
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 1.25rem;
+}
+
+.study-pin-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 0.65rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.study-pin-digit {
+  width: 48px;
+  height: 54px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-tertiary);
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.study-pin-digit:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+

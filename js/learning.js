@@ -1,14 +1,19 @@
 /**
  * Engineering Learning Lab & Proof of Work Script - Thilac Ramesh
+ * Includes Google Colab Integration and Passcode Protection (Ctrl+Shift+A) for adding/removing notes.
  */
 
-document.addEventListener("DOMContentLoaded", () => {
-  initLearningLab();
-});
-
+const STUDY_PIN = "2026"; // Passcode for Thilac Ramesh
+let isStudyAdminAuthenticated = false;
 let currentLearningLogs = [];
 let activeCategory = "all";
 let searchQuery = "";
+let editingLogId = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+  initLearningLab();
+  initAdminSecurity();
+});
 
 function initLearningLab() {
   currentLearningLogs = typeof getStoredLearningLogs === "function" 
@@ -22,6 +27,148 @@ function initLearningLab() {
   updateCategoryCounts();
 }
 
+/* ==========================================================================
+   ADMIN SECURITY & PASSCODE PROTECTION (Ctrl + Shift + A)
+   ========================================================================== */
+function initAdminSecurity() {
+  // Check existing session
+  if (sessionStorage.getItem("thilac_admin_session") === "granted") {
+    setAdminAuthenticated(true);
+  } else {
+    setAdminAuthenticated(false);
+  }
+
+  // Keyboard shortcut: Ctrl + Shift + A
+  window.addEventListener("keydown", (e) => {
+    const isA = e.key === "A" || e.key === "a" || e.code === "KeyA";
+    if (e.ctrlKey && e.shiftKey && isA) {
+      e.preventDefault();
+      if (isStudyAdminAuthenticated) {
+        openAddStudyModal();
+      } else {
+        openStudyPinModal();
+      }
+    }
+  });
+
+  // Top lock button
+  const lockBtn = document.getElementById("study-admin-lock-btn");
+  if (lockBtn) {
+    lockBtn.addEventListener("click", () => {
+      if (isStudyAdminAuthenticated) {
+        // Toggle lock
+        if (confirm("Lock Study Lab admin controls?")) {
+          sessionStorage.removeItem("thilac_admin_session");
+          setAdminAuthenticated(false);
+        }
+      } else {
+        openStudyPinModal();
+      }
+    });
+  }
+
+  // PIN Input auto-focus and verification
+  const pinModal = document.getElementById("study-pin-modal");
+  if (pinModal) {
+    const digits = pinModal.querySelectorAll(".study-pin-digit");
+    digits.forEach((digit, idx) => {
+      digit.addEventListener("input", (e) => {
+        if (e.target.value.length === 1 && idx < digits.length - 1) {
+          digits[idx + 1].focus();
+        }
+        checkStudyPin();
+      });
+
+      digit.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace" && !e.target.value && idx > 0) {
+          digits[idx - 1].focus();
+        }
+      });
+
+      digit.addEventListener("paste", (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData("text").trim();
+        if (text) {
+          const chars = text.split("").slice(0, digits.length);
+          chars.forEach((c, i) => {
+            if (digits[i]) digits[i].value = c;
+          });
+          checkStudyPin();
+        }
+      });
+    });
+  }
+}
+
+function setAdminAuthenticated(auth) {
+  isStudyAdminAuthenticated = auth;
+  const lockBtn = document.getElementById("study-admin-lock-btn");
+  const lockIcon = document.getElementById("study-lock-icon");
+  const lockLabel = document.getElementById("study-lock-label");
+
+  if (auth) {
+    document.body.classList.add("study-admin-unlocked");
+    if (lockBtn) lockBtn.classList.add("unlocked");
+    if (lockIcon) lockIcon.className = "fas fa-unlock";
+    if (lockLabel) lockLabel.textContent = "Admin Mode";
+  } else {
+    document.body.classList.remove("study-admin-unlocked");
+    if (lockBtn) lockBtn.classList.remove("unlocked");
+    if (lockIcon) lockIcon.className = "fas fa-lock";
+    if (lockLabel) lockLabel.textContent = "Locked";
+  }
+}
+
+function openStudyPinModal() {
+  const modal = document.getElementById("study-pin-modal");
+  if (!modal) return;
+
+  const errorEl = document.getElementById("study-pin-error");
+  if (errorEl) errorEl.textContent = "";
+
+  const digits = modal.querySelectorAll(".study-pin-digit");
+  digits.forEach(d => {
+    d.value = "";
+    d.style.borderColor = "";
+  });
+
+  modal.classList.add("active");
+  document.body.style.overflow = "hidden";
+
+  setTimeout(() => {
+    if (digits[0]) digits[0].focus();
+  }, 150);
+}
+
+function checkStudyPin() {
+  const modal = document.getElementById("study-pin-modal");
+  if (!modal) return;
+  const digits = modal.querySelectorAll(".study-pin-digit");
+  const entered = Array.from(digits).map(d => d.value).join("");
+
+  if (entered.length === 4) {
+    if (entered === STUDY_PIN) {
+      sessionStorage.setItem("thilac_admin_session", "granted");
+      setAdminAuthenticated(true);
+      modal.classList.remove("active");
+      document.body.style.overflow = "";
+      renderLearningLogs();
+      openAddStudyModal();
+    } else {
+      const errorEl = document.getElementById("study-pin-error");
+      if (errorEl) errorEl.textContent = "Incorrect passcode. Access denied.";
+      digits.forEach(d => {
+        d.style.borderColor = "#e11d48";
+        d.value = "";
+      });
+      if (digits[0]) digits[0].focus();
+    }
+  }
+}
+
+/* ==========================================================================
+   CATEGORY & FILTERING
+   ========================================================================== */
 function updateCategoryCounts() {
   const counts = {
     all: currentLearningLogs.length,
@@ -65,6 +212,9 @@ function setupSearchInput() {
   });
 }
 
+/* ==========================================================================
+   RENDER CARDS & COLAB / ADMIN ACTION BADGES
+   ========================================================================== */
 function renderLearningLogs() {
   const grid = document.getElementById("learning-logs-grid");
   if (!grid) return;
@@ -81,6 +231,7 @@ function renderLearningLogs() {
       log.categoryLabel,
       log.detailedNotes,
       log.terminalCommands,
+      log.colabUrl || "",
       (log.keyTakeaways || []).join(" ")
     ].join(" ").toLowerCase();
 
@@ -94,7 +245,7 @@ function renderLearningLogs() {
       <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: var(--lab-bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-subtle);">
         <i class="fas fa-search" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
         <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-primary);">No study logs found</h3>
-        <p style="font-size: 0.9rem; color: var(--text-secondary); max-width: 400px; margin: 0 auto 1.5rem;">No proof logs match the query "${escapeHtml(searchQuery)}". Try another search keyword or clear filters.</p>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); max-width: 400px; margin: 0 auto 1.5rem;">No proof logs match your search. Try another query or clear filters.</p>
         <button class="btn btn-primary" onclick="resetSearchFilter()">Show All Records</button>
       </div>
     `;
@@ -107,6 +258,7 @@ function renderLearningLogs() {
     card.setAttribute("data-id", log.id);
 
     const hasVideo = !!log.videoUrl;
+    const hasColab = !!log.colabUrl;
     const hasTerminal = !!log.terminalCommands;
     const hasImages = Array.isArray(log.images) && log.images.length > 0;
 
@@ -115,8 +267,21 @@ function renderLearningLogs() {
         <span class="learning-card-badge ${log.badgeType || 'accent-cyan'}">
           <i class="fas fa-shield-alt"></i> ${escapeHtml(log.badge || 'Verified Proof')}
         </span>
-        <div class="learning-card-meta">
-          <span><i class="far fa-clock"></i> ${escapeHtml(log.hoursLogged || '40+ hrs')}</span>
+        
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <div class="learning-card-meta">
+            <span><i class="far fa-clock"></i> ${escapeHtml(log.hoursLogged || '40+ hrs')}</span>
+          </div>
+
+          <!-- Secret Admin Edit & Delete buttons -->
+          <div class="card-admin-actions">
+            <button class="btn-card-admin btn-edit" onclick="openEditStudyModal('${log.id}', event)" title="Edit this study log">
+              <i class="fas fa-pencil-alt"></i>
+            </button>
+            <button class="btn-card-admin btn-delete" onclick="deleteStudyLog('${log.id}', event)" title="Remove / delete this study log">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -124,6 +289,7 @@ function renderLearningLogs() {
       <p class="learning-card-desc">${escapeHtml(log.summary)}</p>
 
       <div class="learning-proof-pills">
+        ${hasColab ? `<span class="proof-indicator-pill has-colab"><i class="fas fa-book-open"></i> Google Colab</span>` : ''}
         ${hasVideo ? `<span class="proof-indicator-pill has-video"><i class="fas fa-video"></i> Video Breakdown</span>` : ''}
         ${hasTerminal ? `<span class="proof-indicator-pill has-terminal"><i class="fas fa-terminal"></i> Terminal Commands</span>` : ''}
         ${hasImages ? `<span class="proof-indicator-pill has-images"><i class="fas fa-image"></i> ${log.images.length} Lab Proofs</span>` : ''}
@@ -131,9 +297,16 @@ function renderLearningLogs() {
       </div>
 
       <div class="learning-card-footer">
-        <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted);">
-          <i class="fas fa-tag"></i> ${escapeHtml(log.categoryLabel || log.category)}
-        </span>
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted);">
+            <i class="fas fa-tag"></i> ${escapeHtml(log.categoryLabel || log.category)}
+          </span>
+          ${hasColab ? `
+            <a href="${escapeHtml(log.colabUrl)}" target="_blank" rel="noopener noreferrer" class="btn-colab-launch" style="padding: 0.25rem 0.65rem; font-size: 0.74rem;" title="Run in Google Colab">
+              <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Colab" style="height: 16px; vertical-align: middle;">
+            </a>
+          ` : ''}
+        </div>
         <button class="btn-view-notes" onclick="openStudyModal('${log.id}')">
           <i class="fas fa-microscope"></i> Examine Notes
         </button>
@@ -157,6 +330,9 @@ function resetSearchFilter() {
   renderLearningLogs();
 }
 
+/* ==========================================================================
+   DETAIL MODAL WITH GOOGLE COLAB & EMBEDDED DEMOS
+   ========================================================================== */
 function openStudyModal(logId) {
   const log = currentLearningLogs.find(l => l.id === logId);
   if (!log) return;
@@ -174,7 +350,6 @@ function openStudyModal(logId) {
     modalBadge.innerHTML = `<i class="fas fa-shield-alt"></i> ${escapeHtml(log.badge || 'Verified Study Log')}`;
   }
 
-  // Parse detailed notes markdown (simple safe conversion)
   const formattedNotes = formatNotesHtml(log.detailedNotes || "");
 
   const takeawaysHtml = (log.keyTakeaways || []).map(t => `
@@ -194,6 +369,30 @@ function openStudyModal(logId) {
   `).join("");
 
   modalContent.innerHTML = `
+    <!-- Top Google Colab Interactive Notebook Card -->
+    ${log.colabUrl ? `
+      <div class="study-colab-card">
+        <div class="study-colab-info">
+          <div class="study-colab-icon">
+            <i class="fas fa-file-code"></i>
+          </div>
+          <div>
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: #b45309; margin: 0 0 0.2rem; display: flex; align-items: center; gap: 6px;">
+              <span>Interactive Google Colab Notebook</span>
+              <span style="font-size: 0.72rem; padding: 2px 7px; border-radius: 999px; background: rgba(245, 158, 11, 0.2); color: #d97706;">Live Runtime</span>
+            </h4>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 0; line-height: 1.45;">
+              Execute Python equations, verify parameter convergence, and inspect plots directly in a free cloud GPU/CPU environment.
+            </p>
+          </div>
+        </div>
+        <a href="${escapeHtml(log.colabUrl)}" target="_blank" rel="noopener noreferrer" class="btn-colab-launch">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+          <span>Open Live Notebook</span>
+        </a>
+      </div>
+    ` : ''}
+
     <!-- Top Video Embed if exists -->
     ${log.videoUrl ? `
       <div class="study-video-frame-wrap">
@@ -272,6 +471,16 @@ function openStudyModal(logId) {
         </ul>
       </div>
     ` : ''}
+
+    <!-- Actions Bar -->
+    <div style="display: flex; justify-content: flex-end; gap: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+      ${log.colabUrl ? `
+        <a href="${escapeHtml(log.colabUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="font-size: 0.82rem;">
+          <i class="fas fa-external-link-alt"></i> Colab
+        </a>
+      ` : ''}
+      <button class="btn btn-secondary modal-close-btn" style="padding: 0.5rem 1.25rem;">Close</button>
+    </div>
   `;
 
   modal.classList.add("active");
@@ -288,7 +497,6 @@ function formatNotesHtml(markdown) {
     .replace(/`([^`]+)`/gim, '<code style="background: var(--bg-tertiary); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.85em;">$1</code>')
     .replace(/^\- (.*$)/gim, '<li style="margin-bottom: 0.35rem;">$1</li>');
 
-  // Wrap loose li into ul
   html = html.replace(/(<li.*<\/li>)/s, '<ul style="padding-left: 1.25rem; margin-bottom: 1rem;">$1</ul>');
   return html.replace(/\n\n/g, '<p style="margin-bottom: 0.85rem;"></p>');
 }
@@ -309,13 +517,11 @@ function copyCodeText(btn) {
 }
 
 function setupModals() {
-  // Close buttons for all modals
   document.querySelectorAll(".modal-backdrop").forEach(modal => {
     modal.addEventListener("click", (e) => {
       if (e.target === modal || e.target.closest(".modal-close-btn")) {
         modal.classList.remove("active");
         document.body.style.overflow = "";
-        // If it was detail modal, stop any running video
         const iframe = modal.querySelector("iframe");
         if (iframe) {
           const src = iframe.src;
@@ -325,7 +531,6 @@ function setupModals() {
     });
   });
 
-  // Escape key closes modals
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       document.querySelectorAll(".modal-backdrop.active").forEach(modal => {
@@ -335,27 +540,103 @@ function setupModals() {
     }
   });
 
-  // Setup Add Study Note Form
   const addForm = document.getElementById("add-study-form");
   if (addForm) {
     addForm.addEventListener("submit", handleAddStudyLogSubmit);
   }
 }
 
+/* ==========================================================================
+   ADD & EDIT STUDY NOTES
+   ========================================================================== */
+function handleAddClick() {
+  if (!isStudyAdminAuthenticated) {
+    openStudyPinModal();
+  } else {
+    openAddStudyModal();
+  }
+}
+
 function openAddStudyModal() {
+  editingLogId = null;
   const modal = document.getElementById("add-study-modal");
-  if (!modal) return;
+  const title = document.getElementById("add-study-modal-heading");
+  const form = document.getElementById("add-study-form");
+  if (!modal || !form) return;
+
+  if (title) title.textContent = "Log New Study Topic or Proof";
+  form.reset();
+
   modal.classList.add("active");
   document.body.style.overflow = "hidden";
+}
+
+function openEditStudyModal(logId, event) {
+  if (event) event.stopPropagation();
+  if (!isStudyAdminAuthenticated) {
+    openStudyPinModal();
+    return;
+  }
+
+  const log = currentLearningLogs.find(l => l.id === logId);
+  if (!log) return;
+
+  editingLogId = logId;
+  const modal = document.getElementById("add-study-modal");
+  const title = document.getElementById("add-study-modal-heading");
+  if (!modal) return;
+
+  if (title) title.textContent = "Edit Study Record: " + log.topic;
+
+  document.getElementById("input-topic").value = log.topic || "";
+  document.getElementById("input-category").value = log.category || "slam";
+  document.getElementById("input-hours").value = log.hoursLogged || "";
+  document.getElementById("input-status").value = log.status || "";
+  document.getElementById("input-colab").value = log.colabUrl || "";
+  document.getElementById("input-video").value = log.videoUrl || "";
+  document.getElementById("input-summary").value = log.summary || "";
+  document.getElementById("input-notes").value = log.detailedNotes || "";
+  document.getElementById("input-commands").value = log.terminalCommands || "";
+  document.getElementById("input-takeaways").value = (log.keyTakeaways || []).join("\n");
+
+  modal.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function deleteStudyLog(logId, event) {
+  if (event) event.stopPropagation();
+  if (!isStudyAdminAuthenticated) {
+    openStudyPinModal();
+    return;
+  }
+
+  const log = currentLearningLogs.find(l => l.id === logId);
+  if (!log) return;
+
+  if (confirm(`Are you sure you want to delete "${log.topic}" from the study lab?`)) {
+    currentLearningLogs = currentLearningLogs.filter(l => l.id !== logId);
+    if (typeof saveStoredLearningLogs === "function") {
+      saveStoredLearningLogs(currentLearningLogs);
+    }
+    renderLearningLogs();
+    updateCategoryCounts();
+  }
 }
 
 function handleAddStudyLogSubmit(e) {
   e.preventDefault();
 
+  if (!isStudyAdminAuthenticated) {
+    alert("Passcode authentication required. Press Ctrl+Shift+A.");
+    openStudyPinModal();
+    return;
+  }
+
   const topic = document.getElementById("input-topic").value.trim();
   const category = document.getElementById("input-category").value;
   const hours = document.getElementById("input-hours").value.trim() || "40+ hrs";
   const status = document.getElementById("input-status").value.trim() || "Verified Study";
+  const colabUrl = document.getElementById("input-colab").value.trim();
   const videoUrl = document.getElementById("input-video").value.trim();
   const summary = document.getElementById("input-summary").value.trim();
   const notes = document.getElementById("input-notes").value.trim();
@@ -387,28 +668,51 @@ function handleAddStudyLogSubmit(e) {
 
   const takeaways = takeawaysRaw ? takeawaysRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
 
-  const newLog = {
-    id: "log-" + Date.now(),
-    topic,
-    category,
-    categoryLabel: categoryLabels[category] || "Engineering Lab",
-    badge: "Lab & Hardware Verified",
-    badgeType: badgeColors[category] || "accent-cyan",
-    status,
-    date: "Current Study",
-    hoursLogged: hours,
-    videoUrl,
-    videoTitle: topic + " Demonstration",
-    images: [],
-    summary,
-    detailedNotes: notes || summary,
-    keyTakeaways: takeaways,
-    terminalCommands: commands,
-    codeSnippet: "",
-    referenceSources: ["Self-directed lab experiment & research documentation."]
-  };
+  if (editingLogId) {
+    // Update existing
+    const idx = currentLearningLogs.findIndex(l => l.id === editingLogId);
+    if (idx !== -1) {
+      currentLearningLogs[idx] = {
+        ...currentLearningLogs[idx],
+        topic,
+        category,
+        categoryLabel: categoryLabels[category] || "Engineering Lab",
+        hoursLogged: hours,
+        status,
+        colabUrl,
+        videoUrl,
+        summary,
+        detailedNotes: notes || summary,
+        keyTakeaways: takeaways,
+        terminalCommands: commands
+      };
+    }
+  } else {
+    // Create new
+    const newLog = {
+      id: "log-" + Date.now(),
+      topic,
+      category,
+      categoryLabel: categoryLabels[category] || "Engineering Lab",
+      badge: "Lab & Hardware Verified",
+      badgeType: badgeColors[category] || "accent-cyan",
+      status,
+      date: "Current Study",
+      hoursLogged: hours,
+      colabUrl,
+      videoUrl,
+      videoTitle: topic + " Demonstration",
+      images: [],
+      summary,
+      detailedNotes: notes || summary,
+      keyTakeaways: takeaways,
+      terminalCommands: commands,
+      codeSnippet: "",
+      referenceSources: ["Self-directed lab experiment & research documentation."]
+    };
+    currentLearningLogs.unshift(newLog);
+  }
 
-  currentLearningLogs.unshift(newLog);
   if (typeof saveStoredLearningLogs === "function") {
     saveStoredLearningLogs(currentLearningLogs);
   }
@@ -416,13 +720,11 @@ function handleAddStudyLogSubmit(e) {
   renderLearningLogs();
   updateCategoryCounts();
 
-  // Close modal and reset form
   const modal = document.getElementById("add-study-modal");
   if (modal) modal.classList.remove("active");
   document.body.style.overflow = "";
   e.target.reset();
-
-  alert("Study Log added successfully! It is now stored in your browser's laboratory store.");
+  editingLogId = null;
 }
 
 function exportLearningJson() {
@@ -435,6 +737,10 @@ function exportLearningJson() {
 }
 
 function restoreDefaultLogs() {
+  if (!isStudyAdminAuthenticated) {
+    openStudyPinModal();
+    return;
+  }
   if (confirm("Reset all study logs back to default pre-loaded records? Any custom browser entries will be cleared.")) {
     if (typeof resetLearningLogsToDefault === "function") {
       currentLearningLogs = resetLearningLogsToDefault();
@@ -456,7 +762,11 @@ function escapeHtml(str) {
 }
 
 window.openStudyModal = openStudyModal;
+window.handleAddClick = handleAddClick;
 window.openAddStudyModal = openAddStudyModal;
+window.openEditStudyModal = openEditStudyModal;
+window.deleteStudyLog = deleteStudyLog;
+window.openStudyPinModal = openStudyPinModal;
 window.resetSearchFilter = resetSearchFilter;
 window.copyCodeText = copyCodeText;
 window.exportLearningJson = exportLearningJson;
