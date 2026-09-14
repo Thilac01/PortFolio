@@ -27,10 +27,10 @@ const DEFAULT_PROJECTS = [
       "assets/unitree-go2-hero.png",
       "assets/unitree-go2-team.png",
       "assets/unitree-go2-robot.png",
-      "assets/schematic-quadruped.svg"
+
     ],
-    videoUrl: "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ", // Embeddable video link or demo
-    pdfUrl: "assets/CV.pdf",
+    videoUrl: "https://www.youtube.com/watch?v=yo7nN9cI1Gg", // Embeddable video link or demo
+    pdfUrl: "WSO2/1.pdf",
     liveUrl: "https://github.com/Thilac01",
     workflow: [
       {
