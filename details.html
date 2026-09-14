@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security & Telemetry Audit Center | Thilac Ramesh</title>
+  <meta name="description" content="Confidential telemetry, device fingerprinting, and legitimacy verification system for portfolio interactions.">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Audit CSS -->
+  <link rel="stylesheet" href="styles/audit.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="audit-ambient-glow"></div>
+  <div class="audit-ambient-glow-2"></div>
+
+  <!-- PASSCODE GATE OVERLAY -->
+  <div id="passcode-gate-overlay">
+    <div class="gate-card">
+      <div class="gate-icon">
+        <i class="fas fa-shield-halved"></i>
+      </div>
+      <h2 style="font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff;">
+        Audit Security Gate
+      </h2>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+        Confidential interaction telemetry & legitimacy dashboard. Enter your 4-digit master PIN to proceed.
+      </p>
+
+      <div class="gate-inputs">
+        <input type="password" maxlength="1" class="gate-digit" id="pin-1" inputmode="numeric" autofocus autocomplete="off">
+        <input type="password" maxlength="1" class="gate-digit" id="pin-2" inputmode="numeric" autocomplete="off">
+        <input type="password" maxlength="1" class="gate-digit" id="pin-3" inputmode="numeric" autocomplete="off">
+        <input type="password" maxlength="1" class="gate-digit" id="pin-4" inputmode="numeric" autocomplete="off">
+      </div>
+
+      <div id="gate-error-msg" style="min-height: 1.25rem; font-size: 0.8rem; color: #ef4444; font-weight: 600; margin-bottom: 1.25rem;"></div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center;">
+        <button type="button" id="btn-submit-gate" class="btn-audit btn-audit-primary" style="padding: 0.65rem 1.75rem; width: 100%;">
+          <i class="fas fa-unlock"></i> Unlock Dashboard
+        </button>
+      </div>
+
+      <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+        <a href="competitions.html" style="font-size: 0.8rem; color: var(--text-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+          <i class="fas fa-arrow-left"></i> Return to Competitions Gallery
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN AUDIT DASHBOARD -->
+  <div id="audit-dashboard" style="display: none;">
+    <!-- Top Navigation Bar -->
+    <header class="audit-navbar">
+      <div class="audit-container audit-nav-inner">
+        <a href="competitions.html" class="audit-brand">
+          <div class="audit-brand-badge">
+            <i class="fas fa-fingerprint"></i>
+          </div>
+          <div class="audit-brand-title">
+            <span class="audit-brand-name">THILAC RAMESH</span>
+            <span class="audit-brand-sub">Legitimacy & Telemetry Audit</span>
+          </div>
+        </a>
+
+        <div class="audit-nav-actions">
+          <a href="competitions.html" class="btn-audit">
+            <i class="fas fa-arrow-left"></i> Gallery
+          </a>
+          <button type="button" id="btn-export-csv" class="btn-audit" title="Download CSV report">
+            <i class="fas fa-file-csv"></i> Export CSV
+          </button>
+          <button type="button" id="btn-export-json" class="btn-audit" title="Download JSON payload">
+            <i class="fas fa-file-code"></i> Export JSON
+          </button>
+          <button type="button" id="btn-lock-session" class="btn-audit btn-audit-danger" title="Lock and exit">
+            <i class="fas fa-lock"></i> Lock
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="audit-container">
+      <!-- Header Banner -->
+      <section class="audit-header-section">
+        <div class="audit-badge-pill">
+          <i class="fas fa-circle-dot" style="font-size: 0.65rem; color: #10b981;"></i> Live Legitimacy Tracking
+        </div>
+        <h1 class="audit-title">Interaction & Telemetry Audit Ledger</h1>
+        <p class="audit-subtitle">
+          Real-time client device fingerprinting, IP network tracing, geographic telemetry, and interaction legitimacy verification. Designed to verify organic engagement and eliminate duplicate or fraudulent interactions.
+        </p>
+      </section>
+
+      <!-- KPI Summary Cards -->
+      <section class="audit-kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Total Interactions</span>
+            <div class="kpi-icon-wrap" style="background: rgba(14, 165, 233, 0.12); color: var(--accent-cyan);">
+              <i class="fas fa-bolt"></i>
+            </div>
+          </div>
+          <div class="kpi-val" id="kpi-total-interactions">0</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">Cumulative likes & verified comments</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Unique Fingerprints</span>
+            <div class="kpi-icon-wrap" style="background: rgba(16, 185, 129, 0.12); color: var(--accent-green);">
+              <i class="fas fa-fingerprint"></i>
+            </div>
+          </div>
+          <div class="kpi-val" id="kpi-unique-devices">0</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">Distinct hardware/browser hashes</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Geographic Spread</span>
+            <div class="kpi-icon-wrap" style="background: rgba(245, 158, 11, 0.12); color: var(--accent-amber);">
+              <i class="fas fa-globe-asia"></i>
+            </div>
+          </div>
+          <div class="kpi-val" id="kpi-geo-count">0</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">Unique cities & regions identified</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Verified Comments</span>
+            <div class="kpi-icon-wrap" style="background: rgba(236, 72, 153, 0.12); color: var(--accent-pink);">
+              <i class="fas fa-comment-dots"></i>
+            </div>
+          </div>
+          <div class="kpi-val" id="kpi-comments-count">0</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">Active community feedback entries</div>
+        </div>
+      </section>
+
+      <!-- Telemetry Breakdown Grid -->
+      <section class="audit-analytics-grid">
+        <!-- Geographic Distribution -->
+        <div class="analytics-box">
+          <div class="analytics-box-title">
+            <span><i class="fas fa-earth-americas" style="color: var(--accent-cyan); margin-right: 8px;"></i> Geographic Spread</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">By City / Country</span>
+          </div>
+          <div class="distribution-list" id="geo-distribution-list">
+            <div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 1.5rem 0;">No telemetry gathered yet.</div>
+          </div>
+        </div>
+
+        <!-- Device & Platform Intelligence -->
+        <div class="analytics-box">
+          <div class="analytics-box-title">
+            <span><i class="fas fa-laptop-code" style="color: var(--accent-green); margin-right: 8px;"></i> Client Platforms</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Devices & OS</span>
+          </div>
+          <div class="distribution-list" id="device-distribution-list">
+            <div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 1.5rem 0;">No device signatures recorded yet.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ledger Section -->
+      <section class="audit-ledger-card">
+        <div class="ledger-toolbar">
+          <div class="ledger-filters">
+            <button type="button" class="btn-audit btn-audit-primary" id="filter-all" onclick="setAuditFilter('all')">
+              <i class="fas fa-list"></i> All Events
+            </button>
+            <button type="button" class="btn-audit" id="filter-comments" onclick="setAuditFilter('comment')">
+              <i class="fas fa-comment"></i> Comments Only
+            </button>
+            <button type="button" class="btn-audit" id="filter-likes" onclick="setAuditFilter('like')">
+              <i class="fas fa-heart"></i> Likes Only
+            </button>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <div class="ledger-search">
+              <i class="fas fa-search"></i>
+              <input type="text" id="audit-search-input" placeholder="Search IP, Hash, Location, Author, or Post...">
+            </div>
+            <button type="button" id="btn-purge-logs" class="btn-audit btn-audit-danger" title="Clear non-essential logs">
+              <i class="fas fa-trash-can"></i> Purge Logs
+            </button>
+          </div>
+        </div>
+
+        <!-- Feed Container -->
+        <div class="audit-entries-list" id="audit-entries-list">
+          <!-- Dynamic Items Rendered via js/audit.js -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="audit-toast" style="position: fixed; bottom: 2rem; right: 2rem; background: #1e293b; color: #fff; border: 1px solid var(--border-subtle); padding: 0.75rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.85rem; display: none; z-index: 11000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); align-items: center; gap: 8px;">
+    <i class="fas fa-info-circle" style="color: var(--accent-cyan);"></i>
+    <span id="audit-toast-msg">Notification</span>
+  </div>
+
+  <!-- Logic Script -->
+  <script src="js/audit.js"></script>
+</body>
+</html>

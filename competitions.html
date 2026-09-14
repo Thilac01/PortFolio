@@ -452,45 +452,6 @@
 
 
 
-  <!-- ========================================================================
-       CONFIDENTIAL GALLERY AUDIT & LEGITIMACY DOSSIER (Ctrl + Shift + A)
-       ======================================================================== -->
-  <div class="gallery-audit-modal" id="gallery-audit-modal" role="dialog" aria-modal="true" aria-label="Legitimacy Audit Inspector">
-    <div class="audit-modal-backdrop" id="audit-modal-backdrop"></div>
-    <div class="audit-modal-dialog">
-      <div class="audit-modal-header">
-        <div>
-          <div style="font-size: 0.75rem; font-weight: 800; color: var(--accent-cyan); letter-spacing: 0.05em; text-transform: uppercase;">
-            <i class="fas fa-shield-alt"></i> Private Security Dossier
-          </div>
-          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0.2rem 0 0;">
-            Gallery Legitimacy &amp; Audit Inspector
-          </h2>
-        </div>
-        <button class="modal-close-btn" id="audit-modal-close-btn" aria-label="Close Audit Modal">&times;</button>
-      </div>
-
-      <div style="padding: 0.85rem 1.75rem; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
-        <div style="display: flex; gap: 0.5rem;" id="audit-filter-buttons">
-          <button type="button" class="btn btn-primary" id="filter-audit-all" style="padding: 0.3rem 0.85rem; font-size: 0.78rem;">All Activity</button>
-          <button type="button" class="btn btn-secondary" id="filter-audit-comments" style="padding: 0.3rem 0.85rem; font-size: 0.78rem;">Comments</button>
-          <button type="button" class="btn btn-secondary" id="filter-audit-likes" style="padding: 0.3rem 0.85rem; font-size: 0.78rem;">Likes</button>
-        </div>
-        <div style="display: flex; gap: 0.5rem;">
-          <button type="button" class="btn btn-outline" id="btn-export-audit" style="padding: 0.3rem 0.85rem; font-size: 0.78rem;">
-            <i class="fas fa-download"></i> Export JSON
-          </button>
-          <button type="button" class="btn btn-outline" id="btn-clear-audit" style="padding: 0.3rem 0.85rem; font-size: 0.78rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">
-            <i class="fas fa-trash"></i> Clear Log
-          </button>
-        </div>
-      </div>
-
-      <div class="audit-modal-body" id="audit-entries-container">
-        <!-- Dynamically injected audit cards -->
-      </div>
-    </div>
-  </div>
 
   <!-- Scripts -->
   <script src="js/gallery-config.js"></script>
