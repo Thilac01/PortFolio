@@ -62,12 +62,12 @@ module.exports = async (req, res) => {
           <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 16px 0;" />
           <h3 style="font-size: 0.95rem; color: #475569; text-transform: uppercase; margin-bottom: 8px;">Message Content:</h3>
           <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border-left: 4px solid #0284c7; white-space: pre-wrap; line-height: 1.6; color: #1e293b;">${message}</div>
-          <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 20px;">Sent via Portfolio Contact Transmission System.</p>
+          <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 20px;">Sent via Portfolio Contact System.</p>
         </div>
       `
     });
 
-    return res.status(200).json({ success: true, message: "Transmission dispatched successfully via SMTP." });
+    return res.status(200).json({ success: true, message: "Message dispatched successfully via SMTP." });
   } catch (err) {
     console.error("SMTP Transmission Error:", err);
     return res.status(500).json({ error: "Failed to dispatch email via SMTP", details: err.message });

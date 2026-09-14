@@ -625,7 +625,7 @@ function initContactForm() {
       }
 
       // Success feedback
-      btn.innerHTML = '<i class="fas fa-check-circle"></i> Message Transmitted!';
+      btn.innerHTML = '<i class="fas fa-check-circle"></i> Message Sent!';
       btn.style.background = "#10b981";
       btn.style.borderColor = "#10b981";
       form.reset();
@@ -635,7 +635,7 @@ function initContactForm() {
         statusBox.style.background = "rgba(16, 185, 129, 0.12)";
         statusBox.style.border = "1px solid rgba(16, 185, 129, 0.35)";
         statusBox.style.color = "#10b981";
-        statusBox.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Dispatch Transmitted!</strong> Your transmission has been delivered to <strong>thilacramesh@gmail.com</strong>.';
+        statusBox.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Message Sent!</strong> Your message has been delivered to <strong>thilacramesh@gmail.com</strong>.';
       }
 
       setTimeout(() => {
@@ -646,8 +646,8 @@ function initContactForm() {
       }, 5000);
 
     } catch (error) {
-      console.warn("Direct transmission relay issue, providing mailto fallback:", error);
-      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Transmission';
+      console.warn("Direct message relay issue, providing mailto fallback:", error);
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send a Message';
       btn.disabled = false;
 
       if (statusBox) {
