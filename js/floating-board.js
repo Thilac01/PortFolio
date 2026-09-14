@@ -23,70 +23,14 @@ let currentViewMode = "feed"; // 'feed' or 'grid'
 let currentLightboxIndex = 0;
 let currentCommentPostId = null;
 
-// Initial Seed Data for Likes & Community Comments
-const SEED_SOCIAL_DATA = {
-  "datastorm-grand-finale": {
-    baseLikes: 1420,
-    comments: [
-      { id: "c1", author: "Dr. K. Jayasundara", role: "Faculty Mentor", avatarColor: "#0a66c2", text: "Proud moment seeing the team represent Peradeniya on the national stage! Brilliant work.", time: "2d ago", likes: 18 },
-      { id: "c2", author: "Naveen Perera", role: "Team Lead @ Octave", avatarColor: "#057642", text: "Exceptional feature defense in the final round. Thoroughly deserved the podium celebration! 🏆", time: "1d ago", likes: 12 },
-      { id: "c3", author: "Shathurshima", role: "DataStorm Finalist", avatarColor: "#7048e8", text: "What an unforgettable journey competing alongside you guys! 🔥", time: "18h ago", likes: 7 }
-    ]
-  },
-  "datastorm-stage-pitch": {
-    baseLikes: 984,
-    comments: [
-      { id: "c1", author: "Minoli Fernando", role: "Analytics Lead", avatarColor: "#e1306c", text: "The slide explaining gradient boosted residuals was pure art. Clear, crisp, and high-impact!", time: "3d ago", likes: 15 },
-      { id: "c2", author: "Rashad", role: "AI Collaborator", avatarColor: "#d97706", text: "That Q&A handling was next level! Keep soaring Thilac 🚀", time: "1d ago", likes: 9 }
-    ]
-  },
-  "datastorm-team-huddle": {
-    baseLikes: 876,
-    comments: [
-      { id: "c1", author: "Dakshayini Ramanesh", role: "Teammate", avatarColor: "#2563eb", text: "3:00 AM hyperparameter tuning paid off! The chemistry in this huddle was legendary 💯", time: "4d ago", likes: 22 },
-      { id: "c2", author: "Nuwan Jayawardena", role: "Delegate", avatarColor: "#057642", text: "Data science at its most intense and collaborative! 👏", time: "2d ago", likes: 5 }
-    ]
-  },
-  "datastorm-results-defense": {
-    baseLikes: 1125,
-    comments: [
-      { id: "c1", author: "Prof. R. Abeyratne", role: "Senior Lecturer", avatarColor: "#0284c7", text: "Rigorous statistical justification. This is how applied machine learning should be defended.", time: "5d ago", likes: 14 },
-      { id: "c2", author: "Dilantha Weerasinghe", role: "ML Engineer", avatarColor: "#7c3aed", text: "Defending AUC and precision-recall trade-offs before an Octave panel is no small feat. Kudos!", time: "3d ago", likes: 11 }
-    ]
-  },
-  "datastorm-delegate-session": {
-    baseLikes: 742,
-    comments: [
-      { id: "c1", author: "Hasini Wickramasinghe", role: "Rotaract UoM", avatarColor: "#db2777", text: "Thank you for joining as distinguished delegates! Looking forward to DataStorm 8.0.", time: "4d ago", likes: 8 }
-    ]
-  },
-  "datastorm-badges": {
-    baseLikes: 1350,
-    comments: [
-      { id: "c1", author: "Daniel", role: "Robotics Researcher", avatarColor: "#10b981", text: "These credentials hold memories of countless sleepless nights and breakthrough algorithms 🪪", time: "1w ago", likes: 25 },
-      { id: "c2", author: "Kanishka Perera", role: "AI Researcher", avatarColor: "#f59e0b", text: "Cloud Solutions + Octave badge of honor! 🏅", time: "6d ago", likes: 10 }
-    ]
-  },
-  "nexushacks-2026": {
-    baseLikes: 1890,
-    comments: [
-      { id: "c1", author: "Aarav Sharma", role: "NexusHacks India Jury", avatarColor: "#9333ea", text: "The multi-agent coordination pipeline for robotics was among the top 1% evaluated in the track. Congratulations on 2nd Place!", time: "2w ago", likes: 34 },
-      { id: "c2", author: "Rohan V.", role: "Agentic AI Developer", avatarColor: "#0a66c2", text: "Blown away by your autonomous reasoning benchmark tests! Well earned win 👏", time: "1w ago", likes: 16 }
-    ]
-  },
-  "model-x-hackathon": {
-    baseLikes: 1280,
-    comments: [
-      { id: "c1", author: "Chathura Dias", role: "IIT Tech Lead", avatarColor: "#ea580c", text: "The NLP OSINT engine architectural diagram alone deserved this award. Clean, modular, and resilient!", time: "3w ago", likes: 21 },
-      { id: "c2", author: "Shathurshima", role: "Data Scientist", avatarColor: "#057642", text: "Sentence-BERT + named entity clustering in real-time was super slick. Congratulations! 🎉", time: "2w ago", likes: 13 }
-    ]
-  }
-};
+// Initial Seed Data for Likes & Community Comments (No dummy data: starts clean at 0)
+const SEED_SOCIAL_DATA = {};
 
-// LocalStorage Keys
-const STORAGE_LIKES_KEY = "thilac_gallery_likes_v2";
-const STORAGE_COMMENTS_KEY = "thilac_gallery_comments_v2";
-const STORAGE_SAVED_KEY = "thilac_gallery_saved_v2";
+// LocalStorage Keys for Real Likes & Comments (v3 ensures clean start from real interactions)
+const STORAGE_LIKES_KEY = "thilac_gallery_liked_posts_v3";
+const STORAGE_COUNTS_KEY = "thilac_gallery_post_likes_v3";
+const STORAGE_COMMENTS_KEY = "thilac_gallery_comments_v3";
+const STORAGE_SAVED_KEY = "thilac_gallery_saved_v3";
 
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
@@ -291,24 +235,6 @@ async function discoverAndSyncGallery() {
             story: `Moment captured during ${cleanName}. Automatically synchronized into the interactive visual feed from the competition gallery folder.`
           };
 
-          // Seed default community engagement for newly discovered item
-          if (!SEED_SOCIAL_DATA[newMomentId]) {
-            SEED_SOCIAL_DATA[newMomentId] = {
-              baseLikes: 820 + ((num * 79) % 350),
-              comments: [
-                {
-                  id: `c_${newMomentId}_1`,
-                  author: "Community Member",
-                  role: "Supporter",
-                  avatarColor: "#0a66c2",
-                  text: `Great capture from ${cleanName}! 🔥`,
-                  time: "Recent",
-                  likes: 4
-                }
-              ]
-            };
-          }
-
           allCompetitions.push(newMoment);
         }
       } else {
@@ -447,20 +373,33 @@ function saveStoredComments(commentsObj) {
   }
 }
 
-// Compute live like count for any post
-function getPostLikeCount(postId) {
-  const seed = SEED_SOCIAL_DATA[postId] ? SEED_SOCIAL_DATA[postId].baseLikes : 950;
-  const likedList = getLikedPostIds();
-  const isLiked = likedList.includes(postId);
-  return seed + (isLiked ? 1 : 0);
+function getStoredLikeCounts() {
+  try {
+    const raw = localStorage.getItem(STORAGE_COUNTS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
 }
 
-// Compute full list of comments for any post
+function saveStoredLikeCounts(countsObj) {
+  try {
+    localStorage.setItem(STORAGE_COUNTS_KEY, JSON.stringify(countsObj));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// Compute live like count for any post (Real count only)
+function getPostLikeCount(postId) {
+  const counts = getStoredLikeCounts();
+  return counts[postId] || 0;
+}
+
+// Compute full list of comments for any post (Real comments only)
 function getPostComments(postId) {
-  const seedList = SEED_SOCIAL_DATA[postId] ? SEED_SOCIAL_DATA[postId].comments : [];
   const stored = getStoredComments();
-  const customList = stored[postId] || [];
-  return [...seedList, ...customList];
+  return stored[postId] || [];
 }
 
 // Format like counts with comma separators e.g. "1,421 likes"
@@ -838,7 +777,7 @@ function renderFeedView(container) {
       <!-- Comments Counter & Quick Preview -->
       <div class="insta-comments-trigger-wrap">
         <button class="insta-view-comments-btn" onclick="openCommentsDrawer('${item.id}')">
-          View all <span id="comments-count-${item.id}">${comments.length}</span> comments
+          ${comments.length === 0 ? 'Be the first to comment...' : `View all <span id="comments-count-${item.id}">${comments.length}</span> comment${comments.length === 1 ? '' : 's'}`}
         </button>
 
         ${recentComment ? `
@@ -974,6 +913,8 @@ function triggerHeartBurst(postId) {
 window.toggleLike = function(postId, allowUnlike = true) {
   let likedList = getLikedPostIds();
   const isCurrentlyLiked = likedList.includes(postId);
+  let counts = getStoredLikeCounts();
+  let currentCount = counts[postId] || 0;
 
   if (isCurrentlyLiked && !allowUnlike) {
     // Keep liked if triggered by double-click
@@ -983,15 +924,19 @@ window.toggleLike = function(postId, allowUnlike = true) {
   if (isCurrentlyLiked) {
     // Unlike
     likedList = likedList.filter(id => id !== postId);
+    currentCount = Math.max(0, currentCount - 1);
   } else {
     // Like
     likedList.push(postId);
+    currentCount += 1;
   }
 
+  counts[postId] = currentCount;
   saveLikedPostIds(likedList);
+  saveStoredLikeCounts(counts);
 
   const updatedIsLiked = likedList.includes(postId);
-  const updatedCount = getPostLikeCount(postId);
+  const updatedCount = currentCount;
 
   // Update Heart Button UI on Card
   const heartBtn = document.getElementById(`heart-btn-${postId}`);
@@ -1235,7 +1180,8 @@ function renderCommentsList(postId) {
     listContainer.innerHTML = `
       <div style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">
         <i class="far fa-comments" style="font-size: 2.5rem; opacity: 0.3; margin-bottom: 0.75rem;"></i>
-        <p>No comments yet. Start the conversation for Thilac!</p>
+        <p style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.3rem;">No comments yet</p>
+        <p style="font-size: 0.85rem; margin: 0;">Be the first to share your thoughts or congratulations!</p>
       </div>
     `;
     return;
@@ -1261,7 +1207,7 @@ function renderCommentsList(postId) {
         <div class="comment-meta-row">
           <span>${escapeHtml(c.time || 'Just now')}</span>
           <button class="comment-like-btn" onclick="toggleCommentLike(this)">
-            <i class="far fa-heart"></i> <span>${c.likes || 1}</span>
+            <i class="far fa-heart"></i> <span>${c.likes || 0}</span>
           </button>
         </div>
       </div>
@@ -1309,7 +1255,7 @@ function addNewComment(postId, author, text) {
     avatarColor: getRandomAvatarColor(),
     text: text,
     time: "Just now",
-    likes: 1
+    likes: 0
   };
 
   stored[postId].push(newComment);
