@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engineering Learning Lab &amp; Proof of Work | Thilac Ramesh</title>
+  <meta name="description" content="Transparent, verified proof of engineering mastery: detailed study notes, video lecture breakdowns, terminal commands, and lab schematics covering ROS 2, LiDAR SLAM, Nav2, and SOLIDWORKS.">
+
+  <!-- Typography Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/competitions.css">
+  <link rel="stylesheet" href="styles/projects.css">
+  <link rel="stylesheet" href="styles/learning.css">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
+</head>
+<body class="light-theme">
+
+  <!-- Ambient Glow Atmosphere -->
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- ========================================================================
+       TOP NAVIGATION BAR
+       ======================================================================== -->
+  <header class="floating-page-header">
+    <div class="container">
+      <div class="floating-nav-bar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <a href="index.html" class="floating-back-link" title="Return to Main Portfolio">
+            <i class="fas fa-arrow-left"></i> <span>Back to Portfolio</span>
+          </a>
+          <div class="brand-title" style="display: flex; align-items: center; gap: 0.5rem;">
+            <span class="brand-name" style="font-size: 0.95rem; font-weight: 700; letter-spacing: 0.05em;">THILAC RAMESH</span>
+            <span style="opacity: 0.35;">/</span>
+            <span class="gallery-nav-badge" style="background: rgba(14, 165, 233, 0.12); color: var(--accent-cyan); border-color: rgba(14, 165, 233, 0.3);">
+              <i class="fas fa-microscope"></i> Learning Lab
+            </span>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <a href="index.html#projects" class="floating-back-link" style="font-size: 0.82rem;">
+            <i class="fas fa-microchip"></i> Projects
+          </a>
+          <a href="competitions.html" class="floating-back-link" style="font-size: 0.82rem;">
+            <i class="fas fa-trophy"></i> Competitions
+          </a>
+          <button class="btn-add-study-log" onclick="openAddStudyModal()" style="font-size: 0.78rem; padding: 0.4rem 0.9rem;">
+            <i class="fas fa-plus"></i> Log Study Note
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       LEARNING LAB HERO SECTION
+       ======================================================================== -->
+  <section class="learning-hero-section">
+    <div class="container">
+      <div class="learning-hero-header">
+        <div class="learning-live-tag">
+          <span class="live-dot"></span>
+          <span>Verified Engineering Proof &bull; Research Notes &bull; Self-Directed Lab</span>
+        </div>
+        <h1 class="learning-main-title">
+          Engineering Learning Lab &amp; <span class="gradient-text">Proof of Work</span>
+        </h1>
+        <p class="learning-subtitle">
+          Eliminating interview ambiguity with concrete evidence. Deep technical breakdowns, video screencasts, terminal commands, equations, and lab notes verifying hands-on competence in <strong>ROS 2, 3D LiDAR SLAM, Nav2, Quadruped Kinematics, and SOLIDWORKS CAE</strong>.
+        </p>
+      </div>
+
+      <!-- Proof of Work Mission Card -->
+      <div class="proof-mission-card">
+        <div class="proof-mission-content">
+          <div class="proof-mission-icon">
+            <i class="fas fa-check-double"></i>
+          </div>
+          <div class="proof-mission-text">
+            <h3>Why This Knowledge Vault Exists</h3>
+            <p>
+              Anyone can list technologies on a resume. This laboratory acts as an open proof ledger documenting the mathematics, terminal configurations, video explanations, and literature citations behind my robotics and CAD implementations.
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
+          <button class="btn btn-outline" onclick="exportLearningJson()" style="font-size: 0.78rem; padding: 0.45rem 0.9rem;" title="Export all logs as JSON">
+            <i class="fas fa-code"></i> Export JSON
+          </button>
+          <button class="btn-add-study-log" onclick="openAddStudyModal()">
+            <i class="fas fa-plus-circle"></i> + Add Entry
+          </button>
+        </div>
+      </div>
+
+      <!-- Metrics Stat Row -->
+      <div class="learning-metrics-grid">
+        <div class="metric-stat-card">
+          <div class="metric-stat-val"><i class="fas fa-brain"></i> 7+</div>
+          <div class="metric-stat-lbl">Core Disciplines Mastered</div>
+        </div>
+        <div class="metric-stat-card">
+          <div class="metric-stat-val"><i class="far fa-clock"></i> 850+</div>
+          <div class="metric-stat-lbl">Documented Lab &amp; Study Hours</div>
+        </div>
+        <div class="metric-stat-card">
+          <div class="metric-stat-val"><i class="fas fa-video"></i> 100%</div>
+          <div class="metric-stat-lbl">Demonstrated with Screencasts</div>
+        </div>
+        <div class="metric-stat-card">
+          <div class="metric-stat-val"><i class="fas fa-certificate"></i> 3x</div>
+          <div class="metric-stat-lbl">Dassault CSWA Certified</div>
+        </div>
+      </div>
+
+      <!-- Controls & Filter Bar -->
+      <div class="learning-controls-bar">
+        <div class="learning-filter-group" id="learning-filter-group">
+          <button class="learning-filter-btn active" data-category="all">
+            <i class="fas fa-layer-group"></i> All Records <span class="learning-filter-count" id="count-lab-all">7</span>
+          </button>
+          <button class="learning-filter-btn" data-category="slam">
+            <i class="fas fa-satellite-dish"></i> LiDAR SLAM <span class="learning-filter-count" id="count-lab-slam">1</span>
+          </button>
+          <button class="learning-filter-btn" data-category="ros2">
+            <i class="fas fa-project-diagram"></i> ROS 2 &amp; DDS <span class="learning-filter-count" id="count-lab-ros2">1</span>
+          </button>
+          <button class="learning-filter-btn" data-category="nav2">
+            <i class="fas fa-route"></i> Nav2 &amp; Costmaps <span class="learning-filter-count" id="count-lab-nav2">1</span>
+          </button>
+          <button class="learning-filter-btn" data-category="quadruped">
+            <i class="fas fa-robot"></i> Quadruped Dynamics <span class="learning-filter-count" id="count-lab-quadruped">1</span>
+          </button>
+          <button class="learning-filter-btn" data-category="cad">
+            <i class="fas fa-cube"></i> SOLIDWORKS CAE <span class="learning-filter-count" id="count-lab-cad">2</span>
+          </button>
+          <button class="learning-filter-btn" data-category="ai">
+            <i class="fas fa-microchip"></i> AI &amp; NLP <span class="learning-filter-count" id="count-lab-ai">1</span>
+          </button>
+        </div>
+
+        <div class="learning-search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="learning-search-input" class="learning-search-input" placeholder="Search equations, commands, topics..." autocomplete="off">
+        </div>
+      </div>
+
+      <!-- Learning Logs Grid Container -->
+      <div class="learning-logs-grid" id="learning-logs-grid">
+        <!-- Dynamically rendered by js/learning.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       STUDY LOG DETAIL MODAL
+       ======================================================================== -->
+  <div class="modal-backdrop" id="study-detail-modal" role="dialog" aria-modal="true">
+    <div class="modal-dialog study-modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="learning-card-badge accent-cyan" id="study-modal-badge">
+            <i class="fas fa-shield-alt"></i> Verified Proof
+          </span>
+          <h2 id="study-modal-title" style="font-size: 1.3rem; margin-top: 0.35rem;">Study Record Details</h2>
+        </div>
+        <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" id="study-modal-body" style="padding: 1.75rem;">
+        <!-- Dynamically injected by openStudyModal() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       ADD NEW STUDY ENTRY STUDIO MODAL
+       ======================================================================== -->
+  <div class="modal-backdrop" id="add-study-modal" role="dialog" aria-modal="true">
+    <div class="modal-dialog" style="max-width: 650px;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div style="font-size: 0.75rem; font-weight: 700; color: #10b981; letter-spacing: 0.05em; text-transform: uppercase;">
+            <i class="fas fa-plus-circle"></i> Self-Service Research Log
+          </div>
+          <h2 style="font-size: 1.25rem;">Log New Study Topic or Proof</h2>
+        </div>
+        <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 1.75rem; max-height: 80vh; overflow-y: auto;">
+        <form id="add-study-form" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">Topic Title *</label>
+            <input type="text" id="input-topic" class="form-control" placeholder="e.g. LiDAR Point Cloud De-Skewing with IMU Pre-integration" required style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">Category</label>
+              <select id="input-category" class="form-control" style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);">
+                <option value="slam">LiDAR SLAM &amp; Perception</option>
+                <option value="ros2">ROS 2 &amp; Middleware</option>
+                <option value="nav2">Nav2 &amp; Autonomous Navigation</option>
+                <option value="quadruped">Quadruped Dynamics</option>
+                <option value="cad">SOLIDWORKS CAE &amp; CAD</option>
+                <option value="ai">AI &amp; Machine Learning</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">Hours Studied</label>
+              <input type="text" id="input-hours" class="form-control" placeholder="e.g. 50+ hrs" style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);">
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">Status Tag</label>
+            <input type="text" id="input-status" class="form-control" placeholder="e.g. Mastered &amp; In Production, Lab Verified, Active Research" style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);">
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">Video Demo / Screencast URL (YouTube Embed / Link)</label>
+            <input type="url" id="input-video" class="form-control" placeholder="https://www.youtube-nocookie.com/embed/..." style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);">
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">Short Summary / Problem Statement *</label>
+            <textarea id="input-summary" rows="2" class="form-control" placeholder="Concise overview of what this topic tackles..." required style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);"></textarea>
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">Detailed Technical Notes (Markdown formatted)</label>
+            <textarea id="input-notes" rows="4" class="form-control" placeholder="Explain the underlying math, architecture, and engineering trade-offs..." style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);"></textarea>
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">Terminal Execution Commands (1 per line)</label>
+            <textarea id="input-commands" rows="2" class="form-control" placeholder="ros2 launch ...&#10;colcon build ..." style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary); font-family: monospace;"></textarea>
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">Key Takeaways (1 per line)</label>
+            <textarea id="input-takeaways" rows="2" class="form-control" placeholder="Key learning 1&#10;Key learning 2" style="width: 100%; padding: 0.55rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary);"></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
+            <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="background: #10b981; border-color: #10b981;">Save to Lab Journal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       FOOTER
+       ======================================================================== -->
+  <footer style="padding: 2.5rem 0; border-top: 1px solid var(--border-subtle); background: var(--bg-primary); text-align: center;">
+    <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+      <div style="display: flex; gap: 1rem;">
+        <a href="https://www.linkedin.com/in/thilac-r-077a85285/" target="_blank" rel="noreferrer" class="icon-btn" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="https://github.com/Thilac01" target="_blank" rel="noreferrer" class="icon-btn" title="GitHub"><i class="fab fa-github"></i></a>
+        <a href="https://orcid.org/0009-0008-2125-4890" target="_blank" rel="noreferrer" class="icon-btn" title="ORCID"><i class="fab fa-orcid"></i></a>
+        <a href="mailto:thilacramesh@gmail.com" class="icon-btn" title="Email"><i class="fas fa-envelope"></i></a>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+        Engineering Proof of Work &bull; <strong>Thilac Ramesh</strong> &bull; Peradeniya, Sri Lanka
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/learning-data.js"></script>
+  <script src="js/learning.js"></script>
+</body>
+</html>
