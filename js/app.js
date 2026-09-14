@@ -602,7 +602,7 @@ function initContactForm() {
 
       // If /api/contact is not available (e.g. static GitHub Pages), dispatch via direct cloud email relay
       if (!delivered) {
-        const relayRes = await fetch("https://formsubmit.co/ajax/thilacramesh@gmail.com", {
+        const relayRes = await fetch("https://formsubmit.co/ajax/f579550fa8bd5728fcacd923dea08d97", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
