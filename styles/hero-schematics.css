@@ -1,0 +1,467 @@
+/* ==========================================================================
+   HERO SECTION & SCHEMATIC HUD STYLES
+   Inspired by Davis Ryan & Thanh Tran Portfolio Aesthetics
+   ========================================================================== */
+
+.hero-section {
+  min-height: 100vh;
+  padding-top: 100px;
+  padding-bottom: 60px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Atmospheric Background Schematics */
+.hero-backdrop-schematic {
+  position: absolute;
+  top: 50%;
+  right: -5%;
+  transform: translateY(-50%);
+  width: 550px;
+  height: 550px;
+  opacity: 0.05;
+  pointer-events: none;
+  transition: opacity var(--transition-smooth);
+}
+
+body.dark-theme .hero-backdrop-schematic {
+  opacity: 0.12;
+  filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.4));
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 4rem;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Left Column: Portrait with Architectural Rounded Card & Technical Accents */
+.hero-portrait-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.portrait-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4 / 5;
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow: 
+    0 16px 36px -10px rgba(0, 0, 0, 0.1),
+    0 0 0 1px var(--border-subtle);
+  background: var(--bg-card);
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+
+.portrait-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.15),
+    0 0 0 1px var(--accent-cyan);
+}
+
+body.dark-theme .portrait-card {
+  box-shadow: 
+    0 20px 40px -15px rgba(0, 0, 0, 0.7),
+    0 0 0 1px var(--border-bright),
+    0 0 30px rgba(56, 189, 248, 0.18);
+  background: var(--bg-secondary);
+}
+
+.portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+}
+
+/* Glass HUD Vignette on Portrait */
+.portrait-overlay-hud {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg, 
+    rgba(0, 0, 0, 0.02) 0%, 
+    rgba(0, 0, 0, 0.05) 60%, 
+    rgba(0, 0, 0, 0.35) 100%
+  );
+  pointer-events: none;
+}
+
+body.dark-theme .portrait-overlay-hud {
+  background: linear-gradient(
+    180deg, 
+    rgba(10, 14, 23, 0.05) 0%, 
+    rgba(10, 14, 23, 0.2) 60%, 
+    rgba(10, 14, 23, 0.85) 100%
+  );
+}
+
+/* Engineering CAD Corner Reticles */
+.cad-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--accent-cyan);
+  pointer-events: none;
+}
+
+.cad-tl {
+  top: 16px;
+  left: 16px;
+  border-top: 2px solid var(--accent-cyan);
+  border-left: 2px solid var(--accent-cyan);
+}
+
+.cad-tr {
+  top: 16px;
+  right: 16px;
+  border-top: 2px solid var(--accent-cyan);
+  border-right: 2px solid var(--accent-cyan);
+}
+
+.cad-bl {
+  bottom: 16px;
+  left: 16px;
+  border-bottom: 2px solid var(--accent-cyan);
+  border-left: 2px solid var(--accent-cyan);
+}
+
+.cad-br {
+  bottom: 16px;
+  right: 16px;
+  border-bottom: 2px solid var(--accent-cyan);
+  border-right: 2px solid var(--accent-cyan);
+}
+
+/* Floating Engineering Badges around Portrait */
+.hero-floating-badge {
+  position: absolute;
+  padding: 0.65rem 1.1rem;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: var(--shadow-md);
+  z-index: 3;
+  animation: floatSubtle 6s ease-in-out infinite alternate;
+}
+
+body.dark-theme .hero-floating-badge {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: var(--border-bright);
+}
+
+.badge-quadruped {
+  top: 8%;
+  left: -24px;
+}
+
+.badge-cswa {
+  bottom: 8%;
+  right: -24px;
+  animation-delay: -3s;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(225, 29, 72, 0.28);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 0 18px rgba(225, 29, 72, 0.12);
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  padding: 0.75rem 1.15rem;
+  text-decoration: none;
+}
+
+body.dark-theme .badge-cswa {
+  background: rgba(15, 23, 42, 0.92);
+  border-color: rgba(244, 63, 94, 0.4);
+  box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.55), 0 0 22px rgba(244, 63, 94, 0.22);
+}
+
+.badge-cswa:hover {
+  transform: translateY(-6px) scale(1.03);
+  border-color: rgba(225, 29, 72, 0.65);
+  box-shadow: 0 16px 36px -5px rgba(0, 0, 0, 0.22), 0 0 28px rgba(225, 29, 72, 0.32);
+}
+
+.floating-cswa-badge-img-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 45%, rgba(225, 29, 72, 0.08) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 2px;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.28);
+  border: 1.5px solid rgba(225, 29, 72, 0.35);
+  transition: transform 0.3s ease;
+}
+
+body.dark-theme .floating-cswa-badge-img-wrap {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 55%, rgba(244, 63, 94, 0.15) 100%);
+  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.4);
+  border-color: rgba(244, 63, 94, 0.55);
+}
+
+.badge-cswa:hover .floating-cswa-badge-img-wrap {
+  transform: scale(1.12) rotate(4deg);
+}
+
+.cswa-badge-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.cswa-verified-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #10b981;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.cswa-verified-tag i {
+  font-size: 0.65rem;
+}
+
+.floating-badge-text .cswa-title {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.floating-badge-text .cswa-sub {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.floating-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--accent-blue-tint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+  font-size: 0.95rem;
+}
+
+.floating-badge-text .label {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.floating-badge-text .val {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+@keyframes floatSubtle {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Right Column: Hero Content & Davis Ryan inspired typography & buttons */
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.hero-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1.1rem;
+  width: fit-content;
+  background: #e6f4ea;
+  border: 1px solid #ceead6;
+  border-radius: var(--radius-full);
+  color: #057642;
+  font-size: 0.82rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+.status-dot-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #057642;
+  box-shadow: 0 0 6px #057642;
+  animation: pulseDot 2s infinite;
+}
+
+body.dark-theme .hero-status-pill {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+body.dark-theme .status-dot-pulse {
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.6; }
+}
+
+.hero-headline {
+  font-size: clamp(2.3rem, 4.5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  color: var(--text-primary);
+}
+
+.hero-headline .text-gradient {
+  background: linear-gradient(135deg, #0a66c2 0%, #004182 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.dark-theme .hero-headline .text-gradient {
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-bio {
+  font-size: 1.1rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  max-width: 600px;
+}
+
+.hero-bio strong {
+  color: var(--text-primary);
+}
+
+/* Action Button Stack */
+.hero-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.hero-action-buttons .btn {
+  min-width: 150px;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.6rem;
+}
+
+/* Quick Metrics Row */
+.hero-metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-number {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-weight: 500;
+  margin-top: 0.2rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    text-align: center;
+  }
+
+  .hero-portrait-wrapper {
+    order: -1;
+  }
+
+  .portrait-card {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .hero-bio {
+    margin: 0 auto;
+  }
+
+  .hero-action-buttons {
+    justify-content: center;
+  }
+
+  .hero-metrics-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-status-pill {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-metrics-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .badge-quadruped {
+    left: -10px;
+  }
+
+  .badge-cswa {
+    right: -10px;
+  }
+}
