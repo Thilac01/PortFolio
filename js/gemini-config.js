@@ -1,21 +1,28 @@
 /**
- * Gemini API Configuration for Thilac Ramesh Portfolio AI Assistant
+ * Gemini API & AI Assistant Configuration for Thilac Ramesh Portfolio
+ * 
+ * On Vercel:
+ * Set GEMINI_API_KEY in Vercel Project Settings -> Environment Variables.
+ * The serverless function /api/chat will automatically handle secure, live Gemini responses.
  */
 const GEMINI_CONFIG = {
-  // Provided Gemini API Key
-  apiKey: "AQ.Ab8RN6LN0OPAPZhy9hCFsQQzLPMGl_ikD7L_QOzHktlbSM7j1g",
-  
-  // Official validated model endpoint
-  model: "gemini-flash-latest",
-  
-  // API URL Generator
-  getEndpointUrl() {
-    return `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
-  },
+  // Serverless API route on Vercel
+  apiEndpoint: "/api/chat",
 
-  // Fallback endpoint if needed
-  getFallbackEndpointUrl() {
-    return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${this.apiKey}`;
+  // Optional direct client-side API Key (e.g. AIzaSy...)
+  // Leaving this blank routes requests to the secure Vercel /api/chat endpoint
+  apiKey: "",
+
+  // Default models
+  model: "gemini-2.0-flash",
+  fallbackModel: "gemini-1.5-flash",
+
+  // Helper to get direct endpoint if client key is configured
+  getEndpointUrl() {
+    if (this.apiKey && this.apiKey.startsWith("AIzaSy")) {
+      return `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
+    }
+    return this.apiEndpoint;
   }
 };
 
@@ -25,4 +32,3 @@ if (typeof window !== "undefined") {
 if (typeof module !== "undefined" && module.exports) {
   module.exports = GEMINI_CONFIG;
 }
-

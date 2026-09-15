@@ -1,0 +1,12 @@
+{
+  "name": "thilac-portfolio",
+  "version": "1.0.0",
+  "description": "Portfolio of Thilac Ramesh - Mechanical Engineering Student Building Autonomous Robotic Systems",
+  "main": "js/app.js",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.16"
+  }
+}

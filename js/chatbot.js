@@ -160,78 +160,100 @@
   }
 
   /**
-   * Query Gemini API with RAG context
+   * Multi-tier query dispatcher:
+   * Tier 1: Vercel Serverless /api/chat (utilizing GEMINI_API_KEY from Vercel environment variables)
+   * Tier 2: Direct Google Gemini API (if client-side valid key configured)
+   * Tier 3: Client-side Semantic Portfolio RAG Engine (Zero-failure guaranteed fallback)
    */
-  async function queryGemini(userQuery) {
-    if (!window.portfolioRAG || !window.GEMINI_CONFIG) {
-      throw new Error("Portfolio RAG or Gemini configuration not initialized.");
+  async function queryAssistant(userQuery) {
+    if (!window.portfolioRAG) {
+      throw new Error("Portfolio RAG engine not initialized.");
     }
 
     // Step 1: Client-Side Semantic Retrieval
     const retrievedChunks = window.portfolioRAG.retrieveContext(userQuery, 3);
     const systemPrompt = window.portfolioRAG.buildSystemInstruction(retrievedChunks);
 
-    // Step 2: Build Multi-turn Contents
-    // We add the user query to conversation history
+    // Save user query to conversation history
     conversationHistory.push({
       role: "user",
       parts: [{ text: userQuery }]
     });
 
-    const payload = {
-      systemInstruction: {
-        parts: [{ text: systemPrompt }]
-      },
-      contents: conversationHistory,
-      generationConfig: {
-        temperature: 0.1, // low temperature for direct, factual answers without hallucination or extra filler
-        maxOutputTokens: 500
-      }
-    };
-
-    const fallbackModels = [
-      window.GEMINI_CONFIG.model || "gemini-flash-latest",
-      "gemini-3.1-flash-lite",
-      "gemini-3.5-flash"
-    ];
-
-    let lastError = null;
     let replyText = null;
+    let sources = retrievedChunks;
 
-    for (const modelName of fallbackModels) {
-      try {
-        const endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${window.GEMINI_CONFIG.apiKey}`;
-        const response = await fetch(endpointUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
+    // --- Tier 1: Vercel Serverless /api/chat ---
+    try {
+      const endpoint = (window.GEMINI_CONFIG && window.GEMINI_CONFIG.apiEndpoint) || "/api/chat";
+      const apiRes = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userQuery,
+          history: conversationHistory,
+          sources: retrievedChunks
+        })
+      });
 
-        if (!response.ok) {
-          const errText = await response.text();
-          console.warn(`Gemini Model ${modelName} returned status ${response.status}: ${errText}`);
-          lastError = new Error(`Gemini status ${response.status}`);
-          continue; // Try next model in fallback list
+      if (apiRes.ok) {
+        const data = await apiRes.json();
+        if (data && data.reply) {
+          replyText = data.reply;
+          if (data.sources && data.sources.length > 0) {
+            sources = data.sources;
+          }
         }
+      }
+    } catch (apiErr) {
+      console.log("Serverless /api/chat not reachable, checking alternative tiers:", apiErr);
+    }
 
-        const data = await response.json();
-        replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (replyText) {
-          break; // Success!
+    // --- Tier 2: Direct Google Gemini API (if valid client key configured) ---
+    if (!replyText && window.GEMINI_CONFIG && window.GEMINI_CONFIG.apiKey && window.GEMINI_CONFIG.apiKey.startsWith("AIzaSy")) {
+      const fallbackModels = [
+        window.GEMINI_CONFIG.model || "gemini-2.0-flash",
+        "gemini-1.5-flash",
+        "gemini-1.5-flash-latest"
+      ];
+
+      const payload = {
+        systemInstruction: {
+          parts: [{ text: systemPrompt }]
+        },
+        contents: conversationHistory,
+        generationConfig: {
+          temperature: 0.15,
+          maxOutputTokens: 500
         }
-      } catch (err) {
-        console.warn(`Error connecting to model ${modelName}:`, err);
-        lastError = err;
+      };
+
+      for (const modelName of fallbackModels) {
+        try {
+          const endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${window.GEMINI_CONFIG.apiKey}`;
+          const response = await fetch(endpointUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (replyText) break;
+          }
+        } catch (clientErr) {
+          console.warn(`Direct model ${modelName} call issue:`, clientErr);
+        }
       }
     }
 
+    // --- Tier 3: Built-in High-Fidelity Knowledge RAG Engine ---
     if (!replyText) {
-      throw lastError || new Error("Failed to receive response from Gemini models.");
+      replyText = window.portfolioRAG.generateSmartResponse(userQuery, retrievedChunks);
     }
 
-    // Save model response to history
+    // Save assistant response to history
     conversationHistory.push({
       role: "model",
       parts: [{ text: replyText }]
@@ -239,7 +261,7 @@
 
     return {
       text: replyText,
-      sources: retrievedChunks
+      sources: sources
     };
   }
 
@@ -264,13 +286,16 @@
     showTypingIndicator();
 
     try {
-      const result = await queryGemini(text);
+      const result = await queryAssistant(text);
       removeTypingIndicator();
       appendMessage("assistant", result.text, result.sources);
     } catch (err) {
       removeTypingIndicator();
-      console.error("Chatbot generation error:", err);
-      appendMessage("assistant", "I apologize, but I encountered a momentary connection issue. Please feel free to try again or ask another question about Thilac's robotics research and engineering projects!");
+      console.error("Chatbot assistant error:", err);
+      const fallbackText = (window.portfolioRAG && window.portfolioRAG.generateSmartResponse)
+        ? window.portfolioRAG.generateSmartResponse(text)
+        : "Thilac Ramesh is an undergraduate in Mechanical Engineering at University of Peradeniya specializing in Autonomous Robotics, Unitree Go2 EDU quadruped, SLAM, ROS 2, and SOLIDWORKS Machine Design.";
+      appendMessage("assistant", fallbackText);
     } finally {
       isGenerating = false;
       if (sendBtn) sendBtn.disabled = false;
